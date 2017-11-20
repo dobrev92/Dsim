@@ -40,13 +40,14 @@ ds_err DevTest::InitResources()
 {
 	ds_err rc;
 
-	Vector2 vec1(3, 5);
-	Vector2 vec2(1, 2);
-	Vector2 res = 3.0f * vec1;
+	Matrix3x3 mat(3);
+	Vector3 vec1 = mat.GetRow(0);
+	Vector3 vec2 = mat.GetRow(1); 
+	Vector3 vec3 = mat.GetRow(2);
 
-	dbg_info("vec1 = [%2f, %2f]\n", vec1.X(), vec1.Y());
-	dbg_info("vec2 = [%2f, %2f]\n", vec2.X(), vec2.Y());
-	dbg_info("res = [%2f, %2f]\n", res.X(), res.Y());
+	dbg_info("vec1 = [%2f, %2f, %2f]\n", vec1.X(), vec1.Y(), vec1.Z());
+	dbg_info("vec2 = [%2f, %2f, %2f]\n", vec2.X(), vec2.Y(), vec2.Z());
+	dbg_info("vec3 = [%2f, %2f, %2f]\n", vec3.X(), vec3.Y(), vec3.Z());
 
 	return DS_SUCCESS;
 }
