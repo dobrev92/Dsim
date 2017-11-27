@@ -1,16 +1,18 @@
 #ifndef __LINEAR_ALGEBRA_H__
-#define __LINEAR_ALGEBRAH_H__
+#define __LINEAR_ALGEBRA_H__
 
 namespace Dsim {
 
-#ifdef DOUBLEPRECISION
+#ifdef DOUBLE_PRECISION
 typedef double scalar;
 #else 
 typedef float scalar;
 #endif
 
 #define PI 3.14159265359
+#define EULER 2.71828182846
 
+//TODO: Redefine vector methods to return scalar
 class Vector2
 {
 	private:
@@ -22,17 +24,24 @@ class Vector2
 		scalar X() const { return elements[0]; }
 		scalar Y() const { return elements[1]; }
 
-		void SetX(scalar x) { elements[0] = x; }
-		void SetY(scalar y) { elements[1] = y; }
+		scalar SetX(scalar x) { elements[0] = x; }
+		scalar SetY(scalar y) { elements[1] = y; }
 
 		scalar GetElement(unsigned int e) const { return elements[e]; }
 		scalar SetElement(unsigned int e, scalar value) { elements[e] = value; }
 
 		scalar length() const;
-		void normalize();
+		Vector2 * normalize();
 
 		scalar* GetPointer() const { return (scalar *)&elements[0]; }
 };
+
+//Vector2 Operators
+Vector2 operator+(const Vector2 & left, const Vector2 & right);
+Vector2 operator-(const Vector2 & left, const Vector2 & right);
+Vector2 operator*(const Vector2 & left, const scalar & right);
+Vector2 operator*(const scalar & left, const Vector2 & right);
+
 
 class Vector3
 {
@@ -46,18 +55,25 @@ class Vector3
 		scalar Y() const { return elements[1]; }
 		scalar Z() const { return elements[2]; }
 
-		void SetX(scalar x) { elements[0] = x; }
-		void SetY(scalar y) { elements[1] = y; }
-		void SetZ(scalar z) { elements[2] = z; }
+		scalar SetX(scalar x) { elements[0] = x; }
+		scalar SetY(scalar y) { elements[1] = y; }
+		scalar SetZ(scalar z) { elements[2] = z; }
 
 		scalar GetElement(unsigned int e) const { return elements[e]; }
 		scalar SetElement(unsigned int e, scalar value) { elements[e] = value; }
 
 		scalar length() const;
-		void normalize();
+		Vector3 * normalize();
 
 		scalar* GetPointer() const { return (scalar *)&elements[0]; }
 };
+
+//Vector3 Operators
+Vector3 operator+(const Vector3 & left, const Vector3 & right);
+Vector3 operator-(const Vector3 & left, const Vector3 & right);
+Vector3 operator*(const Vector3 & left, const scalar & right);
+Vector3 operator*(const scalar & left, const Vector3 & right);
+
 
 class Vector4
 {
@@ -82,28 +98,36 @@ class Vector4
 		scalar SetElement(unsigned int e, scalar value) { elements[e] = value; }
 
 		scalar length() const;
-		void normalize();
+		Vector4 * normalize();
 
 		scalar* GetPointer() const { return (scalar *)&elements[0]; }
 };
 
-//Vector2
-Vector2 operator+(const Vector2 & left, const Vector2 & right);
-Vector2 operator-(const Vector2 & left, const Vector2 & right);
-Vector2 operator*(const Vector2 & left, const scalar & right);
-Vector2 operator*(const scalar & left, const Vector2 & right);
-
-//Vector3
-Vector3 operator+(const Vector3 & left, const Vector3 & right);
-Vector3 operator-(const Vector3 & left, const Vector3 & right);
-Vector3 operator*(const Vector3 & left, const scalar & right);
-Vector3 operator*(const scalar & left, const Vector3 & right);
-
-//vector4
+//Vector4 Operators
 Vector4 operator+(const Vector4 & left, const Vector4 & right);
 Vector4 operator-(const Vector4 & left, const Vector4 & right);
 Vector4 operator*(const Vector4 & left, const scalar & right);
 Vector4 operator*(const scalar & left, const Vector4 & right);
+
+
+class Matrix2x2
+{
+	private:
+		scalar elements[2][2];
+
+	public:
+		Matrix2x2() {}
+		Matrix2x2(scalar s);
+		Matrix2x2(Vector2 column1, Vector2 column2);
+};
+
+//Matrix2x2 Operators
+Matrix2x2 operator+(const Matrix2x2 & left, const Matrix2x2 & right);
+Matrix2x2 operator-(const Matrix2x2 & left, const Matrix2x2 & right);
+Matrix2x2 operator*(const Matrix2x2 & left, const scalar & right);
+Matrix2x2 operator*(const scalar & left, const Matrix2x2 & right);
+Matrix2x2 operator*(const Matrix2x2 & left, const Matrix2x2 & right);
+
 
 class Matrix3x3 
 {
@@ -113,18 +137,26 @@ class Matrix3x3
 		//Default constructor sets all elements to zero
 		Matrix3x3() {}
 		Matrix3x3(scalar s);
-		Matrix3x3(Vector3 column1, Vector3 column2, Vector3 column3);
+		Matrix3x3(Vector3 *column1, Vector3 *column2, Vector3 *column3);
         
 		//Get matrix element
-		scalar GetElement(unsigned int col, unsigned int row);
+		scalar GetElement(unsigned int col, unsigned int row) const;
 		//Set matrix element
-		void SetElement(unsigned int col, unsigned int row, scalar value);
+		scalar SetElement(unsigned int col, unsigned int row, scalar value);
 
-		Vector3 GetColumn(unsigned int col);
-		Vector3 GetRow(unsigned int row);
+		Vector3 * GetColumn(Vector3 *out, unsigned int col) const;
+		Vector3 * GetRow(Vector3 *out, unsigned int row) const;
 
-		scalar* GetPointer() { return &elements[0][0]; }
+		scalar * GetPointer() const { return (scalar *) &elements[0][0]; }
 };
+
+//Matrix3x3 Operators
+Matrix3x3 operator+(const Matrix3x3 & left, const Matrix3x3 & right);
+Matrix3x3 operator-(const Matrix3x3 & left, const Matrix3x3 & right);
+Matrix3x3 operator*(const Matrix3x3 & left, const scalar & right);
+Matrix3x3 operator*(const scalar & left, const Matrix3x3 & right);
+Matrix3x3 operator*(const Matrix3x3 & left, const Matrix3x3 & right);
+
 
 class Matrix4x4 
 {
@@ -132,74 +164,112 @@ class Matrix4x4
 		scalar elements[4][4];
 	public:
 		//Default constructor sets all elements to zero
-		Matrix4x4();
-		Matrix4x4(Vector4 column1, Vector4 column2, Vector4 column3, Vector4 column4);
+		Matrix4x4() {}
+		Matrix4x4(scalar s);
+		Matrix4x4(Vector4 *col0, Vector4 *col1, Vector4 *col2, Vector4 *col3);
         
 		//Get matrix element
-		scalar GetElement(int row, int column);
+		scalar GetElement(unsigned int row, unsigned int column) const;
 		//Set matrix element
-		void SetElement(int row, int column, scalar value);
+		scalar SetElement(unsigned int row, unsigned int column, scalar value);
 
-		//Get Rows, from 0 to 3 for a 4x4 Matrix
-		Vector4 GetRow(int row);
-		//Get Columns, from 0 to 3
-		Vector4 GetColumn(int column);
+		Vector4 * GetColumn(Vector4 *out, unsigned int col) const;
+		Vector4 * GetRow(Vector4 *out, unsigned int row) const;
 
 		scalar* GetPointer() { return &elements[0][0]; }
 };
 
+//Matrix4x4 Operators
+Matrix4x4 operator+(const Matrix4x4 & left, const Matrix4x4 & right);
+Matrix4x4 operator-(const Matrix4x4 & left, const Matrix4x4 & right);
+Matrix4x4 operator*(const Matrix4x4 & left, const scalar & right);
+Matrix4x4 operator*(const scalar & left, const Matrix4x4 & right);
+Matrix4x4 operator*(const Matrix4x4 & left, const Matrix4x4 & right);
 
 
 //Vector arithmetic functions
-Vector2 * AddVector2D(Vector2 *out, const Vector2 *first, const Vector2 *second);
-Vector3 * AddVector3D(Vector3 *out, const Vector3 *first, const Vector3 *second);
-Vector4 * AddVector4D(Vector4 *out, const Vector4 *first, const Vector4 *second);
+//add vectors first and second
+Vector2 * Vector2Add(Vector2 *out, const Vector2 *first, const Vector2 *second);
+Vector3 * Vector3Add(Vector3 *out, const Vector3 *first, const Vector3 *second);
+Vector4 * Vector4Add(Vector4 *out, const Vector4 *first, const Vector4 *second);
 
 //substract second from first
-Vector2 * SubstractVector2D(Vector2 *out, const Vector2 *first, const Vector2 *second);
-Vector3 * SubstractVector3D(Vector3 *out, const Vector3 *first, const Vector3 *second);
-Vector4 * SubstractVector4D(Vector4 *out, const Vector4 *first, const Vector4 *second);
+Vector2 * Vector2Substract(Vector2 *out, const Vector2 *first, const Vector2 *second);
+Vector3 * Vector3Substract(Vector3 *out, const Vector3 *first, const Vector3 *second);
+Vector4 * Vector4Substract(Vector4 *out, const Vector4 *first, const Vector4 *second);
 
 //Vector multiplication by a scalar
-Vector2 * VecScalarMultiply2D(Vector2 *out, const Vector2 *vec, scalar s);
-Vector3 * VecScalarMultiply3D(Vector3 *out, const Vector3 *vec, scalar s);
-Vector4 * VecScalarMultiply4D(Vector4 *out, const Vector4 *vec, scalar s);
+Vector2 * Vector2ScalarMultiply(Vector2 *out, const Vector2 *vec, scalar s);
+Vector3 * Vector3ScalarMultiply(Vector3 *out, const Vector3 *vec, scalar s);
+Vector4 * Vector4ScalarMultiply(Vector4 *out, const Vector4 *vec, scalar s);
 
 //Dot products for all dimensions 
-scalar DotProduct2D(const Vector2 *first, const Vector2 *second);
-scalar DotProduct3D(const Vector3 *first, const Vector3 *second);
-scalar DotProduct4D(const Vector4 *first, const Vector4 *second);
+scalar Vector2Dot(const Vector2 *first, const Vector2 *second);
+scalar Vector3Dot(const Vector3 *first, const Vector3 *second);
+scalar Vector4Dot(const Vector4 *first, const Vector4 *second);
 
 //Length
-scalar VectorLength2D(const Vector2 *vec);
-scalar VectorLength3D(const Vector3 *vec);
-scalar VectorLength4D(const Vector4 *vec);
+scalar Vector2Length(const Vector2 *vec);
+scalar Vector3Length(const Vector3 *vec);
+scalar Vector4Length(const Vector4 *vec);
 
 //Unit Vectors
-Vector2 * GetUnitVector2D(Vector2 * out, const Vector2 *vec);
-Vector3 * GetUnitVector3D(Vector3 * out, const Vector3 *vec);
-Vector4 * GetUnitVector2D(Vector4 * out, const Vector4 *vec);
+Vector2 * Vector2Unit(Vector2 * out, const Vector2 *vec);
+Vector3 * Vector3Unit(Vector3 * out, const Vector3 *vec);
+Vector4 * Vector4Unit(Vector4 * out, const Vector4 *vec);
 
 //cross product
-Vector3 * VectorCross3D(Vector3 *out, const Vector3 *first, const Vector3 *second);
+Vector3 * Vector3Cross(Vector3 *out, const Vector3 *first, const Vector3 *second);
 
 //Mtrix arithmetic functions
-//Matrix2x2 Matrix2x2Identity();
-Matrix3x3 Matrix3x3Identity(Matrix3x3 *out);
-Matrix4x4 Matrix4x4Identity(Matrix4x4 *out);
+//add
+Matrix2x2 * Matrix2x2Add(Matrix2x2 *out, const Matrix2x2 *first, const Matrix2x2 *second);
+Matrix3x3 * Matrix3x3Add(Matrix3x3 *out, const Matrix3x3 *first, const Matrix3x3 *second);
+Matrix4x4 * Matrix4x4Add(Matrix4x4 *out, const Matrix4x4 *first, const Matrix4x4 *second);
+
+//substract
+Matrix2x2 * Matrix2x2Substract(Matrix2x2 *out, const Matrix2x2 *first, const Matrix2x2 *second);
+Matrix3x3 * Matrix3x3Substract(Matrix3x3 *out, const Matrix3x3 *first, const Matrix3x3 *second);
+Matrix4x4 * Matrix4x4Substract(Matrix4x4 *out, const Matrix4x4 *first, const Matrix4x4 *second);
+
+//Matrix multiplication by a scalar
+Matrix2x2 * Matrix2x2ScalarMultiply(Matrix2x2 *out, const Matrix2x2 *vec, scalar s);
+Matrix3x3 * Matrix2x2ScalarMultiply(Matrix3x3 *out, const Matrix3x3 *vec, scalar s);
+Matrix4x4 * Matrix4x4ScalarMultiply(Matrix4x4 *out, const Matrix4x4 *vec, scalar s);
+
+//Identity
+Matrix2x2 * Matrix2x2Identity(Matrix2x2 *out);
+Matrix3x3 * Matrix3x3Identity(Matrix3x3 *out);
+Matrix4x4 * Matrix4x4Identity(Matrix4x4 *out);
 
 //Scale Matrices;
-Matrix3x3 Matrix3x3Scale(Matrix3x3 *out, scalar s);
-Matrix3x3 Matrix3x3Scale(Matrix3x3 *out, Vector3 s);
-Matrix3x3 Matrix3x3Scale(Matrix3x3 *out, scalar x, scalar y, scalar z);
+Matrix3x3 * Matrix3x3Scale(Matrix3x3 *out, scalar s);
+Matrix3x3 * Matrix3x3Scale(Matrix3x3 *out, const Vector3 *s);
+Matrix3x3 * Matrix3x3Scale(Matrix3x3 *out, scalar x, scalar y, scalar z);
 
-//Rotation Matrices
-Matrix3x3 Matrix3x3RotationX(Matrix3x3 *out, scalar angle);
-Matrix3x3 Matrix3x3RotationY(Matrix3x3 *out, scalar angle);
-Matrix3x3 Matrix3x3RotationY(Matrix3x3 *out, scalar angle);
+Matrix4x4 * Matrix4x4Scale(Matrix4x4 *out, scalar s);
+Matrix4x4 * Matrix4x4Scale(Matrix4x4 *out, const Vector4 *s);
+Matrix4x4 * Matrix3x4Scale(Matrix4x4 *out, scalar x, scalar y, scalar z, scalar w);
+
+//Rotation Matrices, angle is in radians
+Matrix3x3 * Matrix3x3RotationX(Matrix3x3 *out, scalar angle);
+Matrix3x3 * Matrix3x3RotationY(Matrix3x3 *out, scalar angle);
+Matrix3x3 * Matrix3x3RotationZ(Matrix3x3 *out, scalar angle);
+
+Matrix4x4 * Matrix4x4RotationX(Matrix4x4 *out, scalar angle);
+Matrix4x4 * Matrix4x4RotationY(Matrix4x4 *out, scalar angle);
+Matrix4x4 * Matrix4x4RotationZ(Matrix4x4 *out, scalar angle);
+
+//View Matrices
+Matrix4x4 * Matrix4x4ViewLookAt(Matrix4x4 * out, Vector3 *pos, Vector3 *lookAt, Vector3 *up);
+
+//Projection Matrices
+Matrix4x4 * Matrix4x4PerspectiveFov(Matrix4x4 *out, scalar fov, scalar ar, scalar z_near, scalar z_far);
 
 //Matrix Multiplication
-Matrix3x3 Matrix3x3Multiply(Matrix3x3 first, Matrix3x3 second);
+Matrix2x2 * Matrix2x2Multiply(Matrix2x2 *out, const Matrix2x2 *first, const Matrix2x2 *second);
+Matrix3x3 * Matrix3x3Multiply(Matrix3x3 *out, const Matrix3x3 *first, const Matrix3x3 *second);
+Matrix4x4 * Matrix4x4Multiply(Matrix4x4 *out, const Matrix4x4 *first, const Matrix4x4 *second);
 
 }
 
