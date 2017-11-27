@@ -16,7 +16,7 @@ ds_err GraphicsWindowGLFW::Init(bool fullscreen, unsigned int samples, int width
 	m_Fullscreen = false;
 	if( !glfwInit() ) {
 		dbg_info("glfwInit = 0\n");
-		return DS_SUCCESS;
+		return DS_FAIL;	
 	}
 
 	if (CreateWindow(fullscreen, samples, width, height) == DS_FAIL) {
@@ -29,7 +29,8 @@ ds_err GraphicsWindowGLFW::Init(bool fullscreen, unsigned int samples, int width
 	// Initialize GLEW
 	glewExperimental = true; // Needed for core profile
 	if (glewInit() != GLEW_OK) {
-		return DS_SUCCESS;
+		dbg_info("glewInit() != GLEW_OK\n");
+		return DS_FAIL;
 	}	
 
 	glfwSetTime(0);
@@ -46,6 +47,7 @@ ds_err GraphicsWindowGLFW::CreateWindow(int fullscreen, int samples, int width, 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	//glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 	if (fullscreen) {
 		m_Window = glfwCreateWindow( width, height, "Simulation Window", glfwGetPrimaryMonitor(), NULL);
@@ -54,32 +56,34 @@ ds_err GraphicsWindowGLFW::CreateWindow(int fullscreen, int samples, int width, 
 	}
 
 	glfwSetInputMode(m_Window, GLFW_STICKY_KEYS, GL_TRUE);
-	/*
-	glfwSetCursorPosCallback(window, __GlfwWrapper::cursor_position_callback);
-	glfwSetMouseButtonCallback(window, __GlfwWrapper::mouse_button_callback);
-	glfwSetWindowSizeCallback(window, window_size_callback);
-	*/
+
+	glfwSetCursorPosCallback(m_Window, GraphicsWindowGLFW::GLFWCursorPositionCallback);
+	glfwSetMouseButtonCallback(m_Window, GraphicsWindowGLFW::GLFWMouseButtonCallback);
+	glfwSetWindowSizeCallback(m_Window, GLFWWindowSizeCallback);
 
 	if (!m_Window) {
 		rc = DS_FAIL;
 	}
-	
+
 	return rc;
 }
 
 void GraphicsWindowGLFW::SetMouseMoveCallback(MouseMoveCallback a_cb)
 {
 	dbg_info("\n");
+	m_MousePosCallback = a_cb;
 }
 
-void GraphicsWindowGLFW::SetMouseButtonFunc(MouseButtonCallback a_cb)
+void GraphicsWindowGLFW::SetMouseButtonCallback(MouseButtonCallback a_cb)
 {
 	dbg_info("\n");
+	m_MouseButtonCallback = a_cb;
 }
 
-void GraphicsWindowGLFW::SetWindowSizeFunc(WindowSizeCallback a_cb)
+void GraphicsWindowGLFW::SetWindowSizeCallback(WindowSizeCallback a_cb)
 {
 	dbg_info("\n");
+	m_WindowSizeCallback = a_cb;
 }
 
 bool GraphicsWindowGLFW::IsActive()
@@ -103,4 +107,27 @@ ds_err GraphicsWindowGLFW::ContextSwitch()
 	dbg_info("\n");
 	return DS_SUCCESS;
 }
+
+void GraphicsWindowGLFW::GLFWCursorPositionCallback(GLFWwindow* window, double xpos, double ypos)
+{
+	if(m_MousePosCallback && mCalee)
+		(*m_MousePosCallback)(mCalee, xpos, ypos);
+}
+
+void GraphicsWindowGLFW::GLFWMouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+{
+	if(m_MouseButtonCallback && mCalee)
+		(*m_MouseButtonCallback)(mCalee, button, action, mods);
+}
+
+void GraphicsWindowGLFW::GLFWWindowSizeCallback(GLFWwindow* window, int width, int height)
+{
+	if(m_WindowSizeCallback && mCalee)
+		(*m_WindowSizeCallback)(mCalee, width, height);
+}
+
+void (*GraphicsWindowGLFW::m_MousePosCallback)(void *, double, double) = NULL;
+void (*GraphicsWindowGLFW::m_MouseButtonCallback)(void *, int, int, int) = NULL;
+void (*GraphicsWindowGLFW::m_WindowSizeCallback)(void *, int, int) = NULL;
+void * GraphicsWindowGLFW::mCalee = NULL;
 
