@@ -7,30 +7,27 @@
 
 namespace Dsim {
 
-class GLVertexBuffer :  public VertexBuffer
-{
-	protected:
-		GLuint mBufferID;
-	public:
-		GLVertexBuffer();
-		ds_err setBufferData(unsigned int size, void *data);
-		ds_err bindBuffer();
-		ds_err PreContextSwitch() {}
-		ds_err PostContextSwitch() {}
-		~GLVertexBuffer();
-};
+typedef enum {
+	VERTEX_BUFFER,
+	INDEX_BUFFER,
+} BufferTarget;
 
-class GLIndexBuffer: public IndexBuffer
+class GLBufferObject
 {
 	protected:
-		GLuint mBufferID;
+		unsigned int size;
+		GLenum mTarget;
+		GLenum mUsage;
+		GLuint buff;
 	public:
-		GLIndexBuffer();
-		ds_err setBufferData(unsigned int size, void *data);
-		ds_err bindBuffer();
-		ds_err PreContextSwitch() {}
-		ds_err PostContextSwitch() {}
-		~GLIndexBuffer();
+		GLBufferObject();
+
+		void SetTarget(BufferTarget target);
+		void BufferData(unsigned int size, const void *data);
+		void BindBuffer();
+
+		virtual ~GLBufferObject();
+
 };
 
 }

@@ -3,47 +3,39 @@
 
 using namespace Dsim;
 
-GLVertexBuffer::GLVertexBuffer()
+GLBufferObject::GLBufferObject()
 {
 	dbg_info("\n");
-	glGenBuffers(1, &mBufferID);
+	glGenBuffers(1, &buff);
 }
 
-ds_err GLVertexBuffer::setBufferData(unsigned int size, void *data)
+void GLBufferObject::SetTarget(BufferTarget target)
 {
-	return DS_SUCCESS;
+	switch(target) {
+		case VERTEX_BUFFER:
+			mTarget =  GL_ARRAY_BUFFER;
+			break;
+
+		case INDEX_BUFFER:
+			mTarget = GL_ELEMENT_ARRAY_BUFFER;
+			break;
+	}
 }
 
-ds_err GLVertexBuffer::bindBuffer()
-{
-	return DS_SUCCESS;
-}
-
-GLVertexBuffer::~GLVertexBuffer()
-{
-	dbg_info("\n");
-	glDeleteBuffers(1, &mBufferID);
-}
-
-GLIndexBuffer::GLIndexBuffer()
+void GLBufferObject::BufferData(unsigned int size, const void *data)
 {
 	dbg_info("\n");
-	glGenBuffers(1, &mBufferID);
+	BindBuffer();
+	glBufferData(mTarget, size, data, GL_STATIC_DRAW);
 }
 
-ds_err GLIndexBuffer::setBufferData(unsigned int size, void *data)
+void GLBufferObject::BindBuffer()
 {
-	return DS_SUCCESS;
+	glBindBuffer(mTarget, buff);
 }
 
-ds_err GLIndexBuffer::bindBuffer()
-{
-	return DS_SUCCESS;
-}
-
-GLIndexBuffer::~GLIndexBuffer()
+GLBufferObject::~GLBufferObject()
 {
 	dbg_info("\n");
-	glDeleteBuffers(1, &mBufferID);
+	glDeleteBuffers(1, &buff);
 }
-
