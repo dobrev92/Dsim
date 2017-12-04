@@ -11,10 +11,10 @@ GLShaderObject::GLShaderObject(ShaderType type)
 	mGLShaderHandle = 0;
 	switch (type) {
 		case SHADER_VERTEX:
-			glCreateShader(GL_VERTEX_SHADER);
+			mGLShaderHandle = glCreateShader(GL_VERTEX_SHADER);
 			break;
 		case SHADER_FRAGMENT:
-			glCreateShader(GL_FRAGMENT_SHADER);
+			mGLShaderHandle = glCreateShader(GL_FRAGMENT_SHADER);
 			break;
 		default:
 			dbg_info("Invalid Shader Type\n");
@@ -27,7 +27,7 @@ ds_err GLShaderObject::CompileShader()
 {
 	//Compile shader from source here
 	GLint infoLogLength = 0;
-	GLint rc = GL_FALSE;
+	GLint rc = -1;
 	char const *sourcePointer = mShaderSrc.c_str();
 	
 	dbg_info("Compiling shader:\n%s\n", sourcePointer);
@@ -37,15 +37,10 @@ ds_err GLShaderObject::CompileShader()
 	//Handle errors
 	glGetShaderiv(mGLShaderHandle, GL_COMPILE_STATUS, &rc);
 	glGetShaderiv(mGLShaderHandle, GL_INFO_LOG_LENGTH, &infoLogLength);
-	dbg_info("GL_COMPILE_STATUS = %X\n", rc);
-	dbg_info("infoLogLength = %d\n", infoLogLength);
 	if (infoLogLength > 0) {
-		dbg_info("Branch start\n");
 		char shaderErrorLog[infoLogLength + 1];
 		glGetShaderInfoLog(mGLShaderHandle, infoLogLength, NULL, &shaderErrorLog[0]);
-		dbg_info("Error Log:\n");
-		dbg_info("%s\n", &shaderErrorLog);
-		dbg_info("Branch end\n");
+		dbg_info("Error Log\n%s\n", &shaderErrorLog);
 		return DS_FAIL;
 	}
 
