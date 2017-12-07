@@ -4,6 +4,7 @@
 namespace Dsim {
 
 typedef enum {
+	DS_NULL_POINTER		=	-3,
 	DS_INVALID_FILE		=	-2,
 	DS_FAIL			=	-1,
 	DS_SUCCESS 		= 	0,
