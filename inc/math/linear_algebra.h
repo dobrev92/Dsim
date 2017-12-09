@@ -109,7 +109,7 @@ Vector4 operator-(const Vector4 & left, const Vector4 & right);
 Vector4 operator*(const Vector4 & left, const scalar & right);
 Vector4 operator*(const scalar & left, const Vector4 & right);
 
-
+//TODO: Implement 2x2 Matrix class
 class Matrix2x2
 {
 	private:
@@ -140,9 +140,9 @@ class Matrix3x3
 		Matrix3x3(Vector3 *column1, Vector3 *column2, Vector3 *column3);
         
 		//Get matrix element
-		scalar GetElement(unsigned int col, unsigned int row) const;
+		scalar GetElement(unsigned int row, unsigned int col) const;
 		//Set matrix element
-		scalar SetElement(unsigned int col, unsigned int row, scalar value);
+		scalar SetElement(unsigned int row, unsigned int col, scalar value);
 
 		Vector3 * GetColumn(Vector3 *out, unsigned int col) const;
 		Vector3 * GetRow(Vector3 *out, unsigned int row) const;

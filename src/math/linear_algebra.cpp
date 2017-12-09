@@ -211,7 +211,7 @@ Matrix3x3::Matrix3x3(Vector3 *column1, Vector3 *column2, Vector3 *column3)
 	Matrix3x3Identity((Matrix3x3 *)&elements[0][0]);
 }
 
-scalar Matrix3x3::GetElement(unsigned int col, unsigned int row) const
+scalar Matrix3x3::GetElement(unsigned int row, unsigned int col) const
 {
 	if (col > 2 || row > 2)
 		return 0;
@@ -219,7 +219,7 @@ scalar Matrix3x3::GetElement(unsigned int col, unsigned int row) const
 	return elements[col][row];
 }
 
-scalar Matrix3x3::SetElement(unsigned int col, unsigned int row, scalar value)
+scalar Matrix3x3::SetElement(unsigned int row, unsigned int col, scalar value)
 {
 	if (col > 2 || row > 2)
 		return 0;
@@ -266,7 +266,7 @@ Matrix4x4::Matrix4x4(Vector4 *col0, Vector4 *col1, Vector4 *col2, Vector4 *col3)
 	Matrix4x4Identity((Matrix4x4 *)&elements[0][0]);
 }
 
-scalar Matrix4x4::GetElement(unsigned int col, unsigned int row) const
+scalar Matrix4x4::GetElement(unsigned int row, unsigned int col) const
 {
 	if (col > 3 || row > 3)
 		return 0;
@@ -274,7 +274,7 @@ scalar Matrix4x4::GetElement(unsigned int col, unsigned int row) const
 	return elements[col][row];
 }
 
-scalar Matrix4x4::SetElement(unsigned int col, unsigned int row, scalar value)
+scalar Matrix4x4::SetElement(unsigned int row, unsigned int col, scalar value)
 {
 	if (col > 3 || row > 3)
 		return 0;
@@ -579,7 +579,7 @@ Matrix4x4 * Dsim::Matrix4x4Scale(Matrix4x4 *out, scalar s)
 }
 
 //ROTATION MATRICES
-//TODO: Implement 3x3 and 4x4 rotation matrices
+//TODO: Implement 3x3 and rotation matrices
 Matrix4x4 * Dsim::Matrix4x4RotationX(Matrix4x4 *out, scalar angle)
 {
 	if (!out)
@@ -601,8 +601,8 @@ Matrix4x4 * Dsim::Matrix4x4RotationY(Matrix4x4 *out, scalar angle)
 
 	Matrix4x4Identity(out);
 	out->SetElement(0, 0, cos(angle));
-	out->SetElement(0, 2, - sin(angle));
-	out->SetElement(2, 0, sin(angle));
+	out->SetElement(2, 0, - sin(angle));
+	out->SetElement(0, 2, sin(angle));
 	out->SetElement(2, 2, cos(angle));
 
 	return out;
@@ -643,17 +643,17 @@ Matrix4x4 * Dsim::Matrix4x4ViewLookAt(Matrix4x4 * out, Vector3 *pos, Vector3 *lo
 
 	Matrix4x4Identity(out);
 	out->SetElement(0, 0, right.X());
-	out->SetElement(0, 1, right.Y());
-	out->SetElement(0, 2, right.Z());
-	out->SetElement(1, 0, tempUp.X());
+	out->SetElement(1, 0, right.Y());
+	out->SetElement(2, 0, right.Z());
+	out->SetElement(0, 1, tempUp.X());
 	out->SetElement(1, 1, tempUp.Y());
-	out->SetElement(1, 2, tempUp.Z());
-	out->SetElement(2, 0, look.X());
-	out->SetElement(2, 1, look.Y());
+	out->SetElement(2, 1, tempUp.Z());
+	out->SetElement(0, 2, look.X());
+	out->SetElement(1, 2, look.Y());
 	out->SetElement(2, 2, look.Z());
-	out->SetElement(3, 0, - Vector3Dot(&right, pos));
-	out->SetElement(3, 1, - Vector3Dot(&tempUp, pos));
-	out->SetElement(3, 2, - Vector3Dot(&look, pos));
+	out->SetElement(0, 3, - Vector3Dot(&right, pos));
+	out->SetElement(1, 3, - Vector3Dot(&tempUp, pos));
+	out->SetElement(2, 3, - Vector3Dot(&look, pos));
 
 	return out;
 }
@@ -671,8 +671,8 @@ Matrix4x4 * Dsim::Matrix4x4PerspectiveFov(Matrix4x4 *out, scalar fov, scalar ar,
 	out->SetElement(0, 0, _cot/ar);
 	out->SetElement(1, 1, _cot);
 	out->SetElement(2, 2, (scalar)((z_near + z_far) / (z_near - z_far)));
-	out->SetElement(3, 2, (scalar)(2 * z_near*z_far / (z_near - z_far)));
-	out->SetElement(2, 3, - 1);
+	out->SetElement(2, 3, (scalar)(2 * z_near*z_far / (z_near - z_far)));
+	out->SetElement(3, 2, - 1);
 
 	return out;
 }
@@ -692,7 +692,7 @@ Matrix3x3 * Dsim::Matrix3x3Multiply(Matrix3x3 *out, const Matrix3x3 *first, cons
 			first->GetRow(&vec1, i);
 			second->GetColumn(&vec2, j);
 			value = Vector3Dot(&vec1, &vec2);
-			out->SetElement(j, i, value);
+			out->SetElement(i, j, value);
 		}
 	}
 
@@ -712,7 +712,7 @@ Matrix4x4 * Dsim::Matrix4x4Multiply(Matrix4x4 *out, const Matrix4x4 *first, cons
 			first->GetRow(&vec1, i);
 			second->GetColumn(&vec2, j);
 			value = Vector4Dot(&vec1, &vec2);
-			out->SetElement(j, i, value);
+			out->SetElement(i, j, value);
 		}
 	}
 
