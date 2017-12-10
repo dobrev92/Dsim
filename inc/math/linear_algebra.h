@@ -118,7 +118,17 @@ class Matrix2x2
 	public:
 		Matrix2x2() {}
 		Matrix2x2(scalar s);
-		Matrix2x2(Vector2 column1, Vector2 column2);
+		Matrix2x2(Vector2 *col0, Vector2 *col1);
+
+		//Get matrix element
+		scalar GetElement(unsigned int row, unsigned int col) const;
+		//Set matrix element
+		scalar SetElement(unsigned int row, unsigned int col, scalar value);
+
+		Vector2 * GetColumn(Vector2 *out, unsigned int col) const;
+		Vector2 * GetRow(Vector2 *out, unsigned int row) const;
+
+		scalar * GetPointer() const { return (scalar *) &elements[0][0]; }
 };
 
 //Matrix2x2 Operators
@@ -137,7 +147,7 @@ class Matrix3x3
 		//Default constructor sets all elements to zero
 		Matrix3x3() {}
 		Matrix3x3(scalar s);
-		Matrix3x3(Vector3 *column1, Vector3 *column2, Vector3 *column3);
+		Matrix3x3(Vector3 *col0, Vector3 *col1, Vector3 *col2);
         
 		//Get matrix element
 		scalar GetElement(unsigned int row, unsigned int col) const;
@@ -176,7 +186,7 @@ class Matrix4x4
 		Vector4 * GetColumn(Vector4 *out, unsigned int col) const;
 		Vector4 * GetRow(Vector4 *out, unsigned int row) const;
 
-		scalar* GetPointer() { return &elements[0][0]; }
+		scalar * GetPointer() const { return (scalar *) &elements[0][0]; }
 };
 
 //Matrix4x4 Operators
@@ -233,14 +243,41 @@ Matrix3x3 * Matrix3x3Substract(Matrix3x3 *out, const Matrix3x3 *first, const Mat
 Matrix4x4 * Matrix4x4Substract(Matrix4x4 *out, const Matrix4x4 *first, const Matrix4x4 *second);
 
 //Matrix multiplication by a scalar
-Matrix2x2 * Matrix2x2ScalarMultiply(Matrix2x2 *out, const Matrix2x2 *vec, scalar s);
-Matrix3x3 * Matrix2x2ScalarMultiply(Matrix3x3 *out, const Matrix3x3 *vec, scalar s);
-Matrix4x4 * Matrix4x4ScalarMultiply(Matrix4x4 *out, const Matrix4x4 *vec, scalar s);
+Matrix2x2 * Matrix2x2ScalarMultiply(Matrix2x2 *out, const Matrix2x2 *mat, scalar s);
+Matrix3x3 * Matrix3x3ScalarMultiply(Matrix3x3 *out, const Matrix3x3 *mat, scalar s);
+Matrix4x4 * Matrix4x4ScalarMultiply(Matrix4x4 *out, const Matrix4x4 *mat, scalar s);
+
+//Transpose
+Matrix2x2 * Matrix2x2Transpose(Matrix2x2 *out, const Matrix2x2 *mat);
+Matrix3x3 * Matrix3x3Transpose(Matrix3x3 *out, const Matrix3x3 *mat);
+Matrix4x4 * Matrix4x4Transpose(Matrix4x4 *out, const Matrix4x4 *mat);
 
 //Identity
 Matrix2x2 * Matrix2x2Identity(Matrix2x2 *out);
 Matrix3x3 * Matrix3x3Identity(Matrix3x3 *out);
 Matrix4x4 * Matrix4x4Identity(Matrix4x4 *out);
+
+//Submatrices
+Matrix2x2 * Matrix3x3Submatrix(Matrix2x2 *out, const Matrix3x3 *mat, unsigned int row, unsigned int col);
+Matrix3x3 * Matrix4x4Submatrix(Matrix3x3 *out, const Matrix4x4 *mat, unsigned int row, unsigned int col);
+
+//Determinants;
+scalar Matrix2x2Determinant(const Matrix2x2 *mat);
+scalar Matrix3x3Determinant(const Matrix3x3 *mat);
+scalar Matrix4x4Determinant(const Matrix4x4 *mat);
+
+//Cofactors
+scalar Matrix3x3Cofactor(const Matrix3x3 *mat, unsigned int row, unsigned int col);
+scalar Matrix4x4Cofactor(const Matrix4x4 *mat, unsigned int row, unsigned int col);
+
+//Cofactor Matrices
+Matrix3x3 * Matrix3x3CofactorMatrix(Matrix3x3 *out, const Matrix3x3 *mat);
+Matrix4x4 * Matrix4x4CofactorMatrix(Matrix4x4 *out, const Matrix4x4 *mat);
+
+//Matrix Inverse
+Matrix2x2 * Matrix2x2Inverse(Matrix2x2 *out, const Matrix2x2 *mat);
+Matrix3x3 * Matrix3x3Inverse(Matrix3x3 *out, const Matrix3x3 *mat);
+Matrix4x4 * Matrix4x4Inverse(Matrix4x4 *out, const Matrix4x4 *mat);
 
 //Scale Matrices;
 Matrix3x3 * Matrix3x3Scale(Matrix3x3 *out, scalar s);
@@ -250,6 +287,10 @@ Matrix3x3 * Matrix3x3Scale(Matrix3x3 *out, scalar x, scalar y, scalar z);
 Matrix4x4 * Matrix4x4Scale(Matrix4x4 *out, scalar s);
 Matrix4x4 * Matrix4x4Scale(Matrix4x4 *out, const Vector4 *s);
 Matrix4x4 * Matrix3x4Scale(Matrix4x4 *out, scalar x, scalar y, scalar z, scalar w);
+
+//Translation Matrices
+Matrix4x4 * Matrix4x4Translation(Matrix4x4 *out, const Vector3 *trans);
+Matrix4x4 * Matrix4x4Translation(Matrix4x4 *out, scalar x, scalar y, scalar z);
 
 //Rotation Matrices, angle is in radians
 Matrix3x3 * Matrix3x3RotationX(Matrix3x3 *out, scalar angle);

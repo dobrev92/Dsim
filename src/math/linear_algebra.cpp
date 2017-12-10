@@ -1,5 +1,7 @@
 #include "math/linear_algebra.h"
 #include <math.h>
+#include <cstring>
+
 #include "debug.h"
 
 using namespace Dsim;
@@ -14,6 +16,7 @@ static void vector_normalize(scalar *out, scalar *vec, unsigned int size);
 
 //functions on C square arrays
 static void matrix_scale(scalar *out, unsigned int size, scalar s);
+static void matrix_transpose(scalar *out, scalar *mat, unsigned int size);
 
 //Vector2
 Vector2::Vector2()
@@ -200,6 +203,35 @@ Vector4 Dsim::operator*(const scalar & left, const Vector4 & right)
 	return result;
 }
 
+//Matrix2x2
+Matrix2x2::Matrix2x2(scalar s)
+{
+	Matrix2x2Identity((Matrix2x2 *)&elements[0][0]);
+}
+
+//TODO: Implement column Matrix2x2 constructor
+Matrix2x2::Matrix2x2(Vector2 *col0, Vector2 *col1)
+{
+	Matrix2x2Identity((Matrix2x2 *)&elements[0][0]);
+}
+
+scalar Matrix2x2::GetElement(unsigned int row, unsigned int col) const
+{
+	if (col > 1 || row > 1)
+		return 0;
+
+	return elements[col][row];
+}
+
+scalar Matrix2x2::SetElement(unsigned int row, unsigned int col, scalar value)
+{
+	if (col > 1 || row > 1)
+		return 0;
+
+	elements[col][row] = value;
+	return elements[col][row];
+}
+
 Matrix3x3::Matrix3x3(scalar s)
 {
 	Matrix3x3Identity((Matrix3x3 *)&elements[0][0]);
@@ -255,6 +287,15 @@ Vector3 * Matrix3x3::GetRow(Vector3 *out, unsigned int row) const
 	return out;
 }
 
+Matrix3x3 Dsim::operator*(const Matrix3x3 & left, const Matrix3x3 & right)
+{
+	Matrix3x3 result;
+
+	Matrix3x3Multiply(&result, &left, &right);
+	return result;
+}
+
+//Matrix4x4
 Matrix4x4::Matrix4x4(scalar s)
 {
 	Matrix4x4Identity((Matrix4x4 *)&elements[0][0]);
@@ -540,7 +581,72 @@ Vector3 * Dsim::Vector3Cross(Vector3 *out, const Vector3 *first, const Vector3 *
 	return out;
 }
 
+//MATRIX SCALAR MULTIPLICATION
+Matrix2x2 * Dsim::Matrix2x2ScalarMultiply(Matrix2x2 *out, const Matrix2x2 *mat, scalar s)
+{
+	if (!out || !mat)
+		return NULL;
+
+	vector_scale(out->GetPointer(), mat->GetPointer(), s, 4);
+	return out;
+}
+
+Matrix3x3 * Dsim::Matrix3x3ScalarMultiply(Matrix3x3 *out, const Matrix3x3 *mat, scalar s)
+{
+	if (!out || !mat)
+		return NULL;
+
+	vector_scale(out->GetPointer(), mat->GetPointer(), s, 9);
+	return out;
+}
+
+Matrix4x4 * Dsim::Matrix4x4ScalarMultiply(Matrix4x4 *out, const Matrix4x4 *mat, scalar s)
+{
+	if (!out || !mat)
+		return NULL;
+
+	vector_scale(out->GetPointer(), mat->GetPointer(), s, 16);
+	return out;
+}
+
+//TRANSPOSE
+Matrix2x2 * Dsim::Matrix2x2Transpose(Matrix2x2 *out, const Matrix2x2 *mat)
+{
+	if (!out || !mat)
+		return NULL;
+
+	matrix_transpose(out->GetPointer(), mat->GetPointer(), 2);
+	return out;
+}
+
+Matrix3x3 * Dsim::Matrix3x3Transpose(Matrix3x3 *out, const Matrix3x3 *mat)
+{
+	if (!out || !mat)
+		return NULL;
+
+	matrix_transpose(out->GetPointer(), mat->GetPointer(), 3);
+	return out;
+}
+
+Matrix4x4 * Dsim::Matrix4x4Transpose(Matrix4x4 *out, const Matrix4x4 *mat)
+{
+	if (!out || !mat)
+		return NULL;
+
+	matrix_transpose(out->GetPointer(), mat->GetPointer(), 4);
+	return out;
+}
+
 //IDENTITY MATRICES
+Matrix2x2 * Dsim::Matrix2x2Identity(Matrix2x2 *out)
+{
+	if (!out)
+		return NULL;
+
+	matrix_scale(out->GetPointer(), 2, 1);
+	return out;
+}
+
 Matrix3x3 * Dsim::Matrix3x3Identity(Matrix3x3 *out)
 {
 	if (!out)
@@ -556,6 +662,215 @@ Matrix4x4 * Dsim::Matrix4x4Identity(Matrix4x4 *out)
 		return NULL;
 
 	matrix_scale(out->GetPointer(), 4, 1);
+	return out;
+}
+
+//Submatrices
+Matrix2x2 * Dsim::Matrix3x3Submatrix(Matrix2x2 *out, const Matrix3x3 *mat, unsigned int row, unsigned int col)
+{
+	if (!out || !mat)
+		return NULL;
+
+	int i, j, k, l;
+	k = 0;
+	l = 0;
+
+	Matrix2x2Identity(out);
+	for (i = 0; i < 3; i++) {
+		l = 0;
+		if (i == row) {
+			continue;
+		}
+		for (j = 0; j < 3; j++) {
+			if (j == col) {
+				continue;
+			}
+			//dbg_info("i = %d, j = %d\n", i, j);
+			//dbg_info("k = %d, l = %d\n", k, l);
+			out->SetElement(k, l, mat->GetElement(i, j));
+		l++;
+		}
+	k++;
+	}
+	return out;
+}
+
+Matrix3x3 * Dsim::Matrix4x4Submatrix(Matrix3x3 *out, const Matrix4x4 *mat, unsigned int row, unsigned int col)
+{
+	if (!out || !mat)
+		return NULL;
+
+	int i, j, k, l;
+	k = 0;
+	l = 0;
+
+	Matrix3x3Identity(out);
+	for (i = 0; i < 4; i++) {
+		l = 0;
+		if (i == row) {
+			continue;
+		}
+		for (j = 0; j < 4; j++) {
+			if (j == col) {
+				continue;
+			}
+			//dbg_info("i = %d, j = %d\n", i, j);
+			//dbg_info("k = %d, l = %d\n", k, l);
+			out->SetElement(k, l, mat->GetElement(i, j));
+		l++;
+		}
+	k++;
+	}
+	return out;
+}
+
+//DETERMINANTS
+scalar Dsim::Matrix2x2Determinant(const Matrix2x2 *mat)
+{
+	if (!mat)
+		return 0;
+
+	scalar ret = 	mat->GetElement(0, 0) * mat->GetElement(1, 1) -
+			mat->GetElement(0, 1) * mat->GetElement(1, 0);
+
+	return ret;
+}
+
+scalar Dsim::Matrix3x3Determinant(const Matrix3x3 *mat)
+{
+	if (!mat)
+		return 0;
+
+	int i;
+	scalar det = 0;
+
+	for (i = 0; i < 3; i++) {
+		det += mat->GetElement(0, i) * Matrix3x3Cofactor(mat, 0, i);
+	}
+
+	return det;
+}
+
+scalar Dsim::Matrix4x4Determinant(const Matrix4x4 *mat)
+{
+	if (!mat)
+		return 0;
+
+	int i;
+	scalar det = 0;
+
+	for (i = 0; i < 4; i++) {
+		det += mat->GetElement(0, i) * Matrix4x4Cofactor(mat, 0, i);
+		//dbg_info("cofactor %d = %f\n", i, Matrix4x4Cofactor(mat, i, 0));
+	}
+
+	return det;
+}
+
+//COFACTORS
+scalar Dsim::Matrix3x3Cofactor(const Matrix3x3 *mat, unsigned int row, unsigned int col)
+{
+	if (!mat || row > 2 || col > 2)
+		return 0;
+
+	scalar det, ret;
+	Matrix2x2 submatrix;
+
+	Matrix3x3Submatrix(&submatrix, mat, row, col);
+	det = Matrix2x2Determinant(&submatrix);
+	ret = pow(- 1, row + col) * det;
+	dbg_info("cofactor = %f\n", ret);
+	return ret;
+}
+
+scalar Dsim::Matrix4x4Cofactor(const Matrix4x4 *mat, unsigned int row, unsigned int col)
+{
+	if (!mat || row > 3 || col > 3)
+		return 0;
+
+	scalar det, ret;
+	Matrix3x3 submatrix;
+
+	Matrix4x4Submatrix(&submatrix, mat, row, col);
+	det = Matrix3x3Determinant(&submatrix);
+	//dbg_info("det = %f\n", det);
+	ret = pow(- 1, row + col) * det;
+
+	return ret;
+}
+
+//COFACTOR MATRICES
+Matrix3x3 * Dsim::Matrix3x3CofactorMatrix(Matrix3x3 *out, const Matrix3x3 *mat)
+{
+	if (!out || !mat)
+		return NULL;
+
+	unsigned int i, j;
+	Matrix3x3 res;
+
+	for (i = 0; i < 3; i++) {
+		for (j = 0; j < 3; j++) {
+			res.SetElement(i, j, Matrix3x3Cofactor(mat, i, j));
+		}
+	}
+
+	memcpy(out, &res, sizeof(Matrix3x3));
+	return out;
+}
+
+Matrix4x4 * Dsim::Matrix4x4CofactorMatrix(Matrix4x4 *out, const Matrix4x4 *mat)
+{
+	if (!out || !mat)
+		return NULL;
+
+	unsigned int i, j;
+	Matrix4x4 res;
+
+	for (i = 0; i < 4; i++) {
+		for (j = 0; j < 4; j++) {
+			res.SetElement(i, j, Matrix4x4Cofactor(mat, i, j));
+		}
+	}
+
+	memcpy(out, &res, sizeof(Matrix4x4));
+	return out;
+}
+
+//MATRIX INVERSE
+Matrix2x2 * Dsim::Matrix2x2Inverse(Matrix2x2 *out, const Matrix2x2 *mat)
+{
+	return NULL;
+}
+
+Matrix3x3 * Dsim::Matrix3x3Inverse(Matrix3x3 *out, const Matrix3x3 *mat)
+{
+	if (!out || !mat)
+		return NULL;
+
+	Matrix3x3 ret;
+	scalar det;
+
+	Matrix3x3CofactorMatrix(&ret, mat);
+	Matrix3x3Transpose(&ret, &ret);
+	det = Matrix3x3Determinant(mat);
+	Matrix3x3ScalarMultiply(&ret, &ret, 1 / det);
+	memcpy(out, &ret, sizeof(Matrix3x3));
+	return out;
+}
+
+Matrix4x4 * Dsim::Matrix4x4Inverse(Matrix4x4 *out, const Matrix4x4 *mat)
+{
+	if (!out || !mat)
+		return NULL;
+
+	Matrix4x4 ret;
+	scalar det;
+
+	Matrix4x4CofactorMatrix(&ret, mat);
+	Matrix4x4Transpose(&ret, &ret);
+	det = Matrix4x4Determinant(mat);
+	Matrix4x4ScalarMultiply(&ret, &ret, 1 / det);
+	memcpy(out, &ret, sizeof(Matrix4x4));
 	return out;
 }
 
@@ -575,6 +890,20 @@ Matrix4x4 * Dsim::Matrix4x4Scale(Matrix4x4 *out, scalar s)
 		return NULL;
 
 	matrix_scale(out->GetPointer(), 4, s);
+	return out;
+}
+
+//TRANSLATION
+Matrix4x4 * Dsim::Matrix4x4Translation(Matrix4x4 *out, scalar x, scalar y, scalar z)
+{
+	if (!out)
+		return NULL;
+
+	Matrix4x4Identity(out);
+	out->SetElement(0, 3, x);
+	out->SetElement(1, 3, y);
+	out->SetElement(2, 3, z);
+
 	return out;
 }
 
@@ -820,3 +1149,21 @@ void matrix_scale(scalar *out, unsigned int size, scalar s)
 	}
 }
 
+//TODO: Make it in-place
+void matrix_transpose(scalar *out, scalar *mat, unsigned int size)
+{
+	if (!out || !mat || size < 2)
+		return;
+
+	int i, j;
+	scalar (*matrix)[size] = (scalar (*)[size]) mat;
+	scalar temp[size][size];
+
+	for (i = 0; i < size; i++) {
+		for (j = 0; j < size; j++) {
+			temp[i][j] = matrix[j][i];
+		}
+	}
+
+	memcpy(out, &temp, size * size * sizeof(scalar));
+}
