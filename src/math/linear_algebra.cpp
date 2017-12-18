@@ -685,8 +685,6 @@ Matrix2x2 * Dsim::Matrix3x3Submatrix(Matrix2x2 *out, const Matrix3x3 *mat, unsig
 			if (j == col) {
 				continue;
 			}
-			//dbg_info("i = %d, j = %d\n", i, j);
-			//dbg_info("k = %d, l = %d\n", k, l);
 			out->SetElement(k, l, mat->GetElement(i, j));
 		l++;
 		}
@@ -714,8 +712,6 @@ Matrix3x3 * Dsim::Matrix4x4Submatrix(Matrix3x3 *out, const Matrix4x4 *mat, unsig
 			if (j == col) {
 				continue;
 			}
-			//dbg_info("i = %d, j = %d\n", i, j);
-			//dbg_info("k = %d, l = %d\n", k, l);
 			out->SetElement(k, l, mat->GetElement(i, j));
 		l++;
 		}
@@ -761,7 +757,6 @@ scalar Dsim::Matrix4x4Determinant(const Matrix4x4 *mat)
 
 	for (i = 0; i < 4; i++) {
 		det += mat->GetElement(0, i) * Matrix4x4Cofactor(mat, 0, i);
-		//dbg_info("cofactor %d = %f\n", i, Matrix4x4Cofactor(mat, i, 0));
 	}
 
 	return det;
@@ -779,7 +774,6 @@ scalar Dsim::Matrix3x3Cofactor(const Matrix3x3 *mat, unsigned int row, unsigned 
 	Matrix3x3Submatrix(&submatrix, mat, row, col);
 	det = Matrix2x2Determinant(&submatrix);
 	ret = pow(- 1, row + col) * det;
-	dbg_info("cofactor = %f\n", ret);
 	return ret;
 }
 
@@ -793,7 +787,6 @@ scalar Dsim::Matrix4x4Cofactor(const Matrix4x4 *mat, unsigned int row, unsigned 
 
 	Matrix4x4Submatrix(&submatrix, mat, row, col);
 	det = Matrix3x3Determinant(&submatrix);
-	//dbg_info("det = %f\n", det);
 	ret = pow(- 1, row + col) * det;
 
 	return ret;
