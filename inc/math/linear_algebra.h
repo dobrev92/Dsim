@@ -39,6 +39,7 @@ class Vector2
 //Vector2 Operators
 Vector2 operator+(const Vector2 & left, const Vector2 & right);
 Vector2 operator-(const Vector2 & left, const Vector2 & right);
+Vector2 operator*(const Vector2 & left, const Vector2 & right);
 Vector2 operator*(const Vector2 & left, const scalar & right);
 Vector2 operator*(const scalar & left, const Vector2 & right);
 
@@ -71,6 +72,7 @@ class Vector3
 //Vector3 Operators
 Vector3 operator+(const Vector3 & left, const Vector3 & right);
 Vector3 operator-(const Vector3 & left, const Vector3 & right);
+Vector3 operator*(const Vector3 & left, const Vector3 & right);
 Vector3 operator*(const Vector3 & left, const scalar & right);
 Vector3 operator*(const scalar & left, const Vector3 & right);
 
@@ -106,6 +108,7 @@ class Vector4
 //Vector4 Operators
 Vector4 operator+(const Vector4 & left, const Vector4 & right);
 Vector4 operator-(const Vector4 & left, const Vector4 & right);
+Vector4 operator*(const Vector4 & left, const Vector4 & right);
 Vector4 operator*(const Vector4 & left, const scalar & right);
 Vector4 operator*(const scalar & left, const Vector4 & right);
 
@@ -137,6 +140,7 @@ Matrix2x2 operator-(const Matrix2x2 & left, const Matrix2x2 & right);
 Matrix2x2 operator*(const Matrix2x2 & left, const scalar & right);
 Matrix2x2 operator*(const scalar & left, const Matrix2x2 & right);
 Matrix2x2 operator*(const Matrix2x2 & left, const Matrix2x2 & right);
+Vector2 operator*(const Matrix2x2 & mat, const Vector2 & vec);
 
 
 class Matrix3x3 
@@ -166,6 +170,7 @@ Matrix3x3 operator-(const Matrix3x3 & left, const Matrix3x3 & right);
 Matrix3x3 operator*(const Matrix3x3 & left, const scalar & right);
 Matrix3x3 operator*(const scalar & left, const Matrix3x3 & right);
 Matrix3x3 operator*(const Matrix3x3 & left, const Matrix3x3 & right);
+Vector3 operator*(const Matrix3x3 & mat, const Vector3 & vec);
 
 
 class Matrix4x4 
@@ -195,6 +200,7 @@ Matrix4x4 operator-(const Matrix4x4 & left, const Matrix4x4 & right);
 Matrix4x4 operator*(const Matrix4x4 & left, const scalar & right);
 Matrix4x4 operator*(const scalar & left, const Matrix4x4 & right);
 Matrix4x4 operator*(const Matrix4x4 & left, const Matrix4x4 & right);
+Vector4 operator*(const Matrix4x4 & mat, const Vector4 & vec);
 
 
 //Vector arithmetic functions
@@ -207,6 +213,11 @@ Vector4 * Vector4Add(Vector4 *out, const Vector4 *first, const Vector4 *second);
 Vector2 * Vector2Substract(Vector2 *out, const Vector2 *first, const Vector2 *second);
 Vector3 * Vector3Substract(Vector3 *out, const Vector3 *first, const Vector3 *second);
 Vector4 * Vector4Substract(Vector4 *out, const Vector4 *first, const Vector4 *second);
+
+//Elementwise Multiplication
+Vector2 * Vector2Multiply(Vector2 *out, const Vector2 *first, const Vector2 *second);
+Vector3 * Vector3Multiply(Vector3 *out, const Vector3 *first, const Vector3 *second);
+Vector4 * Vector4Multiply(Vector4 *out, const Vector4 *first, const Vector4 *second);
 
 //Vector multiplication by a scalar
 Vector2 * Vector2ScalarMultiply(Vector2 *out, const Vector2 *vec, scalar s);
@@ -311,6 +322,11 @@ Matrix4x4 * Matrix4x4PerspectiveFov(Matrix4x4 *out, scalar fov, scalar ar, scala
 Matrix2x2 * Matrix2x2Multiply(Matrix2x2 *out, const Matrix2x2 *first, const Matrix2x2 *second);
 Matrix3x3 * Matrix3x3Multiply(Matrix3x3 *out, const Matrix3x3 *first, const Matrix3x3 *second);
 Matrix4x4 * Matrix4x4Multiply(Matrix4x4 *out, const Matrix4x4 *first, const Matrix4x4 *second);
+
+//Coordinate transformation(Matrix - vector multiplication)
+Vector2 * Matrix2x2TransformCoord(Vector2 *out, const Matrix2x2 *mat, const Vector2 *vec);
+Vector3 * Matrix3x3TransformCoord(Vector3 *out, const Matrix3x3 *mat, const Vector3 *vec);
+Vector4 * Matrix4x4TransformCoord(Vector4 *out, const Matrix4x4 *mat, const Vector4 *vec);
 
 }
 

@@ -9,6 +9,7 @@ using namespace Dsim;
 //functions on C single arrays
 static void vector_add(scalar *out, scalar *vec1, scalar *vec2, unsigned int size);
 static void vector_substract(scalar *out, scalar *vec1, scalar *vec2, unsigned int size);
+static void vector_multiply(scalar *out, scalar *vec1, scalar *vec2, unsigned int size);
 static void vector_scale(scalar *out, scalar *vec, scalar s, unsigned int size);
 static scalar vector_dot(scalar *vec1, scalar *vec2, unsigned int size);
 static scalar vector_length(scalar *vec, unsigned int size);
@@ -56,6 +57,14 @@ Vector2 Dsim::operator-(const Vector2 & left, const Vector2 & right)
 	Vector2 result;
 
 	Vector2Substract(&result, &left, &right);
+	return result;
+}
+
+Vector2 operator*(const Vector2 & left, const Vector2 & right)
+{
+	Vector2 result;
+
+	Vector2Multiply(&result, &left, &right);
 	return result;
 }
 
@@ -115,6 +124,14 @@ Vector3 Dsim::operator-(const Vector3 & left, const Vector3 & right)
 	Vector3 result;
 
 	Vector3Substract(&result, &left, &right);
+	return result;
+}
+
+Vector3 operator*(const Vector3 & left, const Vector3 & right)
+{
+	Vector3 result;
+
+	Vector3Multiply(&result, &left, &right);
 	return result;
 }
 
@@ -184,6 +201,14 @@ Vector4 Dsim::operator-(const Vector4 & left, const Vector4 & right)
 	Vector4 result;
 
 	Vector4Substract(&result, &left, &right);
+	return result;
+}
+
+Vector4 Dsim::operator*(const Vector4 & left, const Vector4 & right)
+{
+	Vector4 result;
+
+	Vector4Multiply(&result, &left, &right);
 	return result;
 }
 
@@ -295,6 +320,14 @@ Matrix3x3 Dsim::operator*(const Matrix3x3 & left, const Matrix3x3 & right)
 	return result;
 }
 
+Vector3 operator*(const Matrix3x3 & mat, const Vector3 & vec)
+{
+	Vector3 result;
+
+	Matrix3x3TransformCoord(&result, &mat, &vec);
+	return result;
+}
+
 //Matrix4x4
 Matrix4x4::Matrix4x4(scalar s)
 {
@@ -356,6 +389,14 @@ Matrix4x4 Dsim::operator*(const Matrix4x4 & left, const Matrix4x4 & right)
 	Matrix4x4 result;
 
 	Matrix4x4Multiply(&result, &left, &right);
+	return result;
+}
+
+Vector4 operator*(const Matrix4x4 & mat, const Vector4 & vec)
+{
+	Vector4 result;
+
+	Matrix4x4TransformCoord(&result, &mat, &vec);
 	return result;
 }
 
@@ -431,6 +472,43 @@ Vector4 * Dsim::Vector4Substract(Vector4 *out, const Vector4 *first, const Vecto
 	scalar *vec2 = second->GetPointer();
 
 	vector_substract(out->GetPointer(), vec1, vec2, 4);
+	return out;
+}
+
+//ELEMENTWISE MULTIPLICATION
+Vector2 * Dsim::Vector2Multiply(Vector2 *out, const Vector2 *first, const Vector2 *second)
+{
+	if (!out || !first || !second)
+		return NULL;
+
+	scalar *vec1 = first->GetPointer();
+	scalar *vec2 = second->GetPointer();
+
+	vector_multiply(out->GetPointer(), vec1, vec2, 2);
+	return out;
+}
+
+Vector3 * Dsim::Vector3Multiply(Vector3 *out, const Vector3 *first, const Vector3 *second)
+{
+	if (!out || !first || !second)
+		return NULL;
+
+	scalar *vec1 = first->GetPointer();
+	scalar *vec2 = second->GetPointer();
+
+	vector_multiply(out->GetPointer(), vec1, vec2, 3);
+	return out;
+}
+
+Vector4 * Dsim::Vector4Multiply(Vector4 *out, const Vector4 *first, const Vector4 *second)
+{
+	if (!out || !first || !second)
+		return NULL;
+
+	scalar *vec1 = first->GetPointer();
+	scalar *vec2 = second->GetPointer();
+
+	vector_multiply(out->GetPointer(), vec1, vec2, 4);
 	return out;
 }
 
@@ -1041,6 +1119,41 @@ Matrix4x4 * Dsim::Matrix4x4Multiply(Matrix4x4 *out, const Matrix4x4 *first, cons
 	return out;
 }
 
+//TRANSFORM COORDINATES
+Vector3 *Dsim::Matrix3x3TransformCoord(Vector3 *out, const Matrix3x3 *mat, const Vector3 *vec)
+{
+	if (!out || !mat || !vec)
+		return NULL;
+
+	unsigned int i;
+	for (i = 0; i < 3; i++) {
+		scalar value;
+		Vector3 row;
+		mat->GetRow(&row, i);
+		value = Vector3Dot(&row, vec);
+		out->SetElement(i, value);
+	}
+
+	return out;
+}
+
+Vector4 *Dsim::Matrix4x4TransformCoord(Vector4 *out, const Matrix4x4 *mat, const Vector4 *vec)
+{
+	if (!out || !mat || !vec)
+		return NULL;
+
+	unsigned int i;
+	for (i = 0; i < 4; i++) {
+		scalar value;
+		Vector4 row;
+		mat->GetRow(&row, i);
+		value = Vector4Dot(&row, vec);
+		out->SetElement(i, value);
+	}
+
+	return out;
+}
+
 //functions on C arrays
 void vector_add(scalar *out, scalar *vec1, scalar *vec2, unsigned int size)
 {
@@ -1064,6 +1177,18 @@ void vector_substract(scalar *out, scalar *vec1, scalar *vec2, unsigned int size
 
 	for (i = 0; i < size; i++) {
 		out[i] = vec1[i] - vec2[i];
+	}
+}
+
+static void vector_multiply(scalar *out, scalar *vec1, scalar *vec2, unsigned int size)
+{
+	if (!vec1 || !vec2 || !out || !size)
+		return;
+
+	unsigned int i;
+
+	for (i = 0; i < size; i++) {
+		out[i] = vec1[i] * vec2[i];
 	}
 }
 
