@@ -320,7 +320,7 @@ Matrix3x3 Dsim::operator*(const Matrix3x3 & left, const Matrix3x3 & right)
 	return result;
 }
 
-Vector3 operator*(const Matrix3x3 & mat, const Vector3 & vec)
+Vector3 Dsim::operator*(const Matrix3x3 & mat, const Vector3 & vec)
 {
 	Vector3 result;
 
@@ -1066,7 +1066,7 @@ Matrix3x3 * Dsim::Matrix3x3YawPitchRoll(Matrix3x3 *out, scalar yaw, scalar pitch
 	return out;
 }
 
-Matrix3x3 * Matrix3x3YawPitchRoll(Matrix3x3 *out, const Vector3 *angles)
+Matrix3x3 * Dsim::Matrix3x3YawPitchRoll(Matrix3x3 *out, const Vector3 *angles)
 {
 	if (!out || !angles)
 		return NULL;
