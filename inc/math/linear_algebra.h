@@ -306,8 +306,8 @@ Matrix4x4 * Matrix4x4Translation(Matrix4x4 *out, const Vector3 *trans);
 Matrix3x3 * Matrix3x3RotationX(Matrix3x3 *out, scalar angle);
 Matrix3x3 * Matrix3x3RotationY(Matrix3x3 *out, scalar angle);
 Matrix3x3 * Matrix3x3RotationZ(Matrix3x3 *out, scalar angle);
-Matrix3x3 * Matrix4x4YawPitchRoll(Matrix3x3 *out, scalar yaw, scalar pitch, scalar roll);
-Matrix3x3 * Matrix4x4YawPitchRoll(Matrix3x3 *out, const Vector3 *angles);
+Matrix3x3 * Matrix3x3YawPitchRoll(Matrix3x3 *out, scalar yaw, scalar pitch, scalar roll);
+Matrix3x3 * Matrix3x3YawPitchRoll(Matrix3x3 *out, const Vector3 *angles);
 
 Matrix4x4 * Matrix4x4RotationX(Matrix4x4 *out, scalar angle);
 Matrix4x4 * Matrix4x4RotationY(Matrix4x4 *out, scalar angle);

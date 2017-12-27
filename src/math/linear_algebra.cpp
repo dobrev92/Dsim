@@ -60,7 +60,7 @@ Vector2 Dsim::operator-(const Vector2 & left, const Vector2 & right)
 	return result;
 }
 
-Vector2 operator*(const Vector2 & left, const Vector2 & right)
+Vector2 Dsim::operator*(const Vector2 & left, const Vector2 & right)
 {
 	Vector2 result;
 
@@ -127,7 +127,7 @@ Vector3 Dsim::operator-(const Vector3 & left, const Vector3 & right)
 	return result;
 }
 
-Vector3 operator*(const Vector3 & left, const Vector3 & right)
+Vector3 Dsim::operator*(const Vector3 & left, const Vector3 & right)
 {
 	Vector3 result;
 
@@ -1008,7 +1008,72 @@ Matrix4x4 * Dsim::Matrix4x4Translation(Matrix4x4 *out, const Vector3 *trans)
 }
 
 //ROTATION MATRICES
-//TODO: Implement 3x3 and rotation matrices
+Matrix3x3 * Dsim::Matrix3x3RotationX(Matrix3x3 *out, scalar angle)
+{
+	if (!out)
+		return NULL;
+
+	Matrix3x3Identity(out);
+	out->SetElement(1, 1, cos(angle));
+	out->SetElement(2, 1, - sin(angle));
+	out->SetElement(1, 2, sin(angle));
+	out->SetElement(2, 2, cos(angle));
+
+	return out;
+}
+
+Matrix3x3 * Dsim::Matrix3x3RotationY(Matrix3x3 *out, scalar angle)
+{
+	if (!out)
+		return NULL;
+
+	Matrix3x3Identity(out);
+	out->SetElement(0, 0, cos(angle));
+	out->SetElement(2, 0, - sin(angle));
+	out->SetElement(0, 2, sin(angle));
+	out->SetElement(2, 2, cos(angle));
+
+	return out;
+}
+
+Matrix3x3 * Dsim::Matrix3x3RotationZ(Matrix3x3 *out, scalar angle)
+{
+	if (!out)
+		return NULL;
+
+	Matrix3x3Identity(out);
+	out->SetElement(0, 0, cos(angle));
+	out->SetElement(1, 0, - sin(angle));
+	out->SetElement(0, 1, sin(angle));
+	out->SetElement(1, 1, cos(angle));
+
+	return out;
+}
+
+Matrix3x3 * Dsim::Matrix3x3YawPitchRoll(Matrix3x3 *out, scalar yaw, scalar pitch, scalar roll)
+{
+	if (!out)
+		return NULL;
+
+	Matrix3x3 result, x, y, z;
+
+	Matrix3x3RotationX(&x, pitch);
+	Matrix3x3RotationY(&y, yaw);
+	Matrix3x3RotationZ(&z, roll);
+
+	result = z * x * y;
+	memcpy(out, &result, sizeof(Matrix3x3));
+	return out;
+}
+
+Matrix3x3 * Matrix3x3YawPitchRoll(Matrix3x3 *out, const Vector3 *angles)
+{
+	if (!out || !angles)
+		return NULL;
+
+	return Matrix3x3YawPitchRoll(out, angles->X(), angles->Y(), angles->Z());
+}
+
 Matrix4x4 * Dsim::Matrix4x4RotationX(Matrix4x4 *out, scalar angle)
 {
 	if (!out)
