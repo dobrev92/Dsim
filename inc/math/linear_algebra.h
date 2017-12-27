@@ -112,7 +112,6 @@ Vector4 operator*(const Vector4 & left, const Vector4 & right);
 Vector4 operator*(const Vector4 & left, const scalar & right);
 Vector4 operator*(const scalar & left, const Vector4 & right);
 
-//TODO: Implement 2x2 Matrix class
 class Matrix2x2
 {
 	private:
@@ -292,25 +291,29 @@ Matrix4x4 * Matrix4x4Inverse(Matrix4x4 *out, const Matrix4x4 *mat);
 
 //Scale Matrices;
 Matrix3x3 * Matrix3x3Scale(Matrix3x3 *out, scalar s);
-Matrix3x3 * Matrix3x3Scale(Matrix3x3 *out, const Vector3 *s);
 Matrix3x3 * Matrix3x3Scale(Matrix3x3 *out, scalar x, scalar y, scalar z);
+Matrix3x3 * Matrix3x3Scale(Matrix3x3 *out, const Vector3 *s);
 
 Matrix4x4 * Matrix4x4Scale(Matrix4x4 *out, scalar s);
-Matrix4x4 * Matrix4x4Scale(Matrix4x4 *out, const Vector4 *s);
-Matrix4x4 * Matrix3x4Scale(Matrix4x4 *out, scalar x, scalar y, scalar z, scalar w);
+Matrix4x4 * Matrix4x4Scale(Matrix4x4 *out, scalar x, scalar y, scalar z);
+Matrix4x4 * Matrix4x4Scale(Matrix4x4 *out, const Vector3 *s);
 
 //Translation Matrices
-Matrix4x4 * Matrix4x4Translation(Matrix4x4 *out, const Vector3 *trans);
 Matrix4x4 * Matrix4x4Translation(Matrix4x4 *out, scalar x, scalar y, scalar z);
+Matrix4x4 * Matrix4x4Translation(Matrix4x4 *out, const Vector3 *trans);
 
 //Rotation Matrices, angle is in radians
 Matrix3x3 * Matrix3x3RotationX(Matrix3x3 *out, scalar angle);
 Matrix3x3 * Matrix3x3RotationY(Matrix3x3 *out, scalar angle);
 Matrix3x3 * Matrix3x3RotationZ(Matrix3x3 *out, scalar angle);
+Matrix3x3 * Matrix4x4YawPitchRoll(Matrix3x3 *out, scalar yaw, scalar pitch, scalar roll);
+Matrix3x3 * Matrix4x4YawPitchRoll(Matrix3x3 *out, const Vector3 *angles);
 
 Matrix4x4 * Matrix4x4RotationX(Matrix4x4 *out, scalar angle);
 Matrix4x4 * Matrix4x4RotationY(Matrix4x4 *out, scalar angle);
 Matrix4x4 * Matrix4x4RotationZ(Matrix4x4 *out, scalar angle);
+Matrix4x4 * Matrix4x4YawPitchRoll(Matrix4x4 *out, scalar yaw, scalar pitch, scalar roll);
+Matrix4x4 * Matrix4x4YawPitchRoll(Matrix4x4 *out, const Vector3 *angles);
 
 //View Matrices
 Matrix4x4 * Matrix4x4ViewLookAt(Matrix4x4 * out, Vector3 *pos, Vector3 *lookAt, Vector3 *up);
@@ -327,6 +330,8 @@ Matrix4x4 * Matrix4x4Multiply(Matrix4x4 *out, const Matrix4x4 *first, const Matr
 Vector2 * Matrix2x2TransformCoord(Vector2 *out, const Matrix2x2 *mat, const Vector2 *vec);
 Vector3 * Matrix3x3TransformCoord(Vector3 *out, const Matrix3x3 *mat, const Vector3 *vec);
 Vector4 * Matrix4x4TransformCoord(Vector4 *out, const Matrix4x4 *mat, const Vector4 *vec);
+
+Matrix4x4 * Matrix4x4WorldTransform(Matrix4x4 *out, const Vector3 *pos, const Vector3 *orientation, const Vector3 *scale);
 
 }
 

@@ -964,6 +964,27 @@ Matrix4x4 * Dsim::Matrix4x4Scale(Matrix4x4 *out, scalar s)
 	return out;
 }
 
+Matrix4x4 * Dsim::Matrix4x4Scale(Matrix4x4 *out, scalar x, scalar y, scalar z)
+{
+	if (!out)
+		return NULL;
+
+	Matrix4x4Identity(out);
+	out->SetElement(0, 0, x);
+	out->SetElement(1, 1, y);
+	out->SetElement(2, 2, z);
+
+	return out;
+}
+
+Matrix4x4 * Dsim::Matrix4x4Scale(Matrix4x4 *out, const Vector3 *s)
+{
+	if (!out || !s)
+		return NULL;
+
+	return Matrix4x4Scale(out, s->X(), s->Y(), s->Z());
+}
+
 //TRANSLATION
 Matrix4x4 * Dsim::Matrix4x4Translation(Matrix4x4 *out, scalar x, scalar y, scalar z)
 {
@@ -976,6 +997,14 @@ Matrix4x4 * Dsim::Matrix4x4Translation(Matrix4x4 *out, scalar x, scalar y, scala
 	out->SetElement(2, 3, z);
 
 	return out;
+}
+
+Matrix4x4 * Dsim::Matrix4x4Translation(Matrix4x4 *out, const Vector3 *trans)
+{
+	if (!out || !trans)
+		return NULL;
+
+	Matrix4x4Translation(out, trans->X(), trans->Y(), trans->Z());
 }
 
 //ROTATION MATRICES
@@ -1022,6 +1051,29 @@ Matrix4x4 * Dsim::Matrix4x4RotationZ(Matrix4x4 *out, scalar angle)
 	return out;
 }
 
+Matrix4x4 * Dsim::Matrix4x4YawPitchRoll(Matrix4x4 *out, scalar yaw, scalar pitch, scalar roll)
+{
+	if (!out)
+		return NULL;
+
+	Matrix4x4 result, x, y, z;
+
+	Matrix4x4RotationX(&x, pitch);
+	Matrix4x4RotationY(&y, yaw);
+	Matrix4x4RotationZ(&z, roll);
+
+	result = z * x * y;
+	memcpy(out, &result, sizeof(Matrix4x4));
+	return out;
+}
+
+Matrix4x4 * Dsim::Matrix4x4YawPitchRoll(Matrix4x4 *out, const Vector3 *angles)
+{
+	if (!out || !angles)
+		return NULL;
+
+	return Matrix4x4YawPitchRoll(out, angles->X(), angles->Y(), angles->Z());
+}
 
 //VIEW Matrices
 Matrix4x4 * Dsim::Matrix4x4ViewLookAt(Matrix4x4 * out, Vector3 *pos, Vector3 *lookAt, Vector3 *up)
@@ -1154,12 +1206,28 @@ Vector4 *Dsim::Matrix4x4TransformCoord(Vector4 *out, const Matrix4x4 *mat, const
 	return out;
 }
 
+//WORLD TRANSFORM
+Matrix4x4 * Dsim::Matrix4x4WorldTransform(Matrix4x4 *out, const Vector3 *pos, const Vector3 *orientation, const Vector3 *scale)
+{
+	if (!out || !pos || !orientation || !scale)
+		return NULL;
+
+	Matrix4x4 trans, rot, scaling, result;
+
+	Matrix4x4Translation(&trans, pos);
+	Matrix4x4YawPitchRoll(&rot, orientation);
+	Matrix4x4Scale(&scaling, scale);
+
+	result = trans * rot * scaling;
+	memcpy(out, &result, sizeof(Matrix4x4));
+	return out;
+}
+
 //functions on C arrays
 void vector_add(scalar *out, scalar *vec1, scalar *vec2, unsigned int size)
 {
-	if (!vec1 || !vec2 || !out || !size){
+	if (!vec1 || !vec2 || !out || !size)
 		return;
-	}
 
 	unsigned int i;
 
