@@ -10,6 +10,7 @@ using namespace Dsim;
 static void vector_add(scalar *out, scalar *vec1, scalar *vec2, unsigned int size);
 static void vector_substract(scalar *out, scalar *vec1, scalar *vec2, unsigned int size);
 static void vector_multiply(scalar *out, scalar *vec1, scalar *vec2, unsigned int size);
+static void vector_divide(scalar *out, scalar *vec1, scalar *vec2, unsigned int size);
 static void vector_scale(scalar *out, scalar *vec, scalar s, unsigned int size);
 static scalar vector_dot(scalar *vec1, scalar *vec2, unsigned int size);
 static scalar vector_length(scalar *vec, unsigned int size);
@@ -84,6 +85,14 @@ Vector2 Dsim::operator*(const scalar & left, const Vector2 & right)
 	return result;
 }
 
+Vector2 Dsim::operator/(const Vector2 & left, const Vector2 & right)
+{
+	Vector2 result;
+
+	Vector2Divide(&result, &left, &right);
+	return result;
+}
+
 //Vector3
 Vector3::Vector3()
 {
@@ -148,6 +157,14 @@ Vector3 Dsim::operator*(const scalar & left, const Vector3 & right)
 	Vector3 result;
 
 	Vector3ScalarMultiply(&result, &right, left);
+	return result;
+}
+
+Vector3 Dsim::operator/(const Vector3 & left, const Vector3 & right)
+{
+	Vector3 result;
+
+	Vector3Divide(&result, &left, &right);
 	return result;
 }
 
@@ -225,6 +242,14 @@ Vector4 Dsim::operator*(const scalar & left, const Vector4 & right)
 	Vector4 result;
 
 	Vector4ScalarMultiply(&result, &right, left);
+	return result;
+}
+
+Vector4 Dsim::operator/(const Vector4 & left, const Vector4 & right)
+{
+	Vector4 result;
+
+	Vector4Divide(&result, &left, &right);
 	return result;
 }
 
@@ -509,6 +534,43 @@ Vector4 * Dsim::Vector4Multiply(Vector4 *out, const Vector4 *first, const Vector
 	scalar *vec2 = second->GetPointer();
 
 	vector_multiply(out->GetPointer(), vec1, vec2, 4);
+	return out;
+}
+
+//ELEMENTWISE DIVISION
+Vector2 * Dsim::Vector2Divide(Vector2 *out, const Vector2 *first, const Vector2 *second)
+{
+	if (!out || !first || !second)
+		return NULL;
+
+	scalar *vec1 = first->GetPointer();
+	scalar *vec2 = second->GetPointer();
+
+	vector_divide(out->GetPointer(), vec1, vec2, 2);
+	return out;
+}
+
+Vector3 * Dsim::Vector3Divide(Vector3 *out, const Vector3 *first, const Vector3 *second)
+{
+	if (!out || !first || !second)
+		return NULL;
+
+	scalar *vec1 = first->GetPointer();
+	scalar *vec2 = second->GetPointer();
+
+	vector_divide(out->GetPointer(), vec1, vec2, 3);
+	return out;
+}
+
+Vector4 * Dsim::Vector4Divide(Vector4 *out, const Vector4 *first, const Vector4 *second)
+{
+	if (!out || !first || !second)
+		return NULL;
+
+	scalar *vec1 = first->GetPointer();
+	scalar *vec2 = second->GetPointer();
+
+	vector_divide(out->GetPointer(), vec1, vec2, 4);
 	return out;
 }
 
@@ -1322,6 +1384,18 @@ static void vector_multiply(scalar *out, scalar *vec1, scalar *vec2, unsigned in
 
 	for (i = 0; i < size; i++) {
 		out[i] = vec1[i] * vec2[i];
+	}
+}
+
+static void vector_divide(scalar *out, scalar *vec1, scalar *vec2, unsigned int size)
+{
+	if (!vec1 || !vec2 || !out || !size)
+		return;
+
+	unsigned int i;
+
+	for (i = 0; i < size; i++) {
+		out[i] = vec1[i] / vec2[i];
 	}
 }
 

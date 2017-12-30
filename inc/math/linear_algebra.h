@@ -42,6 +42,7 @@ Vector2 operator-(const Vector2 & left, const Vector2 & right);
 Vector2 operator*(const Vector2 & left, const Vector2 & right);
 Vector2 operator*(const Vector2 & left, const scalar & right);
 Vector2 operator*(const scalar & left, const Vector2 & right);
+Vector2 operator/(const Vector2 & left, const Vector2 & right);
 
 
 class Vector3
@@ -75,6 +76,7 @@ Vector3 operator-(const Vector3 & left, const Vector3 & right);
 Vector3 operator*(const Vector3 & left, const Vector3 & right);
 Vector3 operator*(const Vector3 & left, const scalar & right);
 Vector3 operator*(const scalar & left, const Vector3 & right);
+Vector3 operator/(const Vector3 & left, const Vector3 & right);
 
 
 class Vector4
@@ -111,6 +113,7 @@ Vector4 operator-(const Vector4 & left, const Vector4 & right);
 Vector4 operator*(const Vector4 & left, const Vector4 & right);
 Vector4 operator*(const Vector4 & left, const scalar & right);
 Vector4 operator*(const scalar & left, const Vector4 & right);
+Vector4 operator/(const Vector4 & left, const Vector4 & right);
 
 class Matrix2x2
 {
@@ -217,6 +220,11 @@ Vector4 * Vector4Substract(Vector4 *out, const Vector4 *first, const Vector4 *se
 Vector2 * Vector2Multiply(Vector2 *out, const Vector2 *first, const Vector2 *second);
 Vector3 * Vector3Multiply(Vector3 *out, const Vector3 *first, const Vector3 *second);
 Vector4 * Vector4Multiply(Vector4 *out, const Vector4 *first, const Vector4 *second);
+
+//Elementwise division
+Vector2 * Vector2Divide(Vector2 *out, const Vector2 *first, const Vector2 *second);
+Vector3 * Vector3Divide(Vector3 *out, const Vector3 *first, const Vector3 *second);
+Vector4 * Vector4Divide(Vector4 *out, const Vector4 *first, const Vector4 *second);
 
 //Vector multiplication by a scalar
 Vector2 * Vector2ScalarMultiply(Vector2 *out, const Vector2 *vec, scalar s);
