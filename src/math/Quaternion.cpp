@@ -209,3 +209,54 @@ Vector3 * Dsim::QuaternionRotate(Vector3 *out, const Quaternion *quat, const Vec
 	return out;
 }
 
+//CONVERSIONS
+Matrix3x3 * Dsim::QuaternionToMatrix3x3(Matrix3x3* out, const Quaternion *quat)
+{
+	if (!out || !quat)
+		return NULL;
+
+	scalar w = quat->W();
+	scalar x = quat->X();
+	scalar y = quat->Y();
+	scalar z = quat->Z();
+
+	scalar fTx = x + x;
+        scalar fTy = y + y;
+        scalar fTz = z + z;
+        scalar fTwx = fTx * w;
+        scalar fTwy = fTy * w;
+        scalar fTwz = fTz * w;
+        scalar fTxx = fTx * x;
+        scalar fTxy = fTy * x;
+        scalar fTxz = fTz * x;
+        scalar fTyy = fTy * y;
+        scalar fTyz = fTz * y;
+        scalar fTzz = fTz * z;
+
+	out->SetElement(0, 0, 1.0f - (fTyy + fTzz));
+	out->SetElement(0, 1, fTxy - fTwz);
+	out->SetElement(0, 2, fTxz + fTwy);
+	out->SetElement(1, 0, fTxy + fTwz);
+	out->SetElement(1, 1, 1.0f - (fTxx + fTzz));
+	out->SetElement(1, 2, fTyz - fTwx);
+	out->SetElement(2, 0, fTxz - fTwy);
+	out->SetElement(2, 1, fTyz + fTwx);
+	out->SetElement(2, 2, 1.0f - (fTxx + fTyy));
+
+	return out;
+}
+
+Matrix4x4 * Dsim::QuaternionToMatrix4x4(Matrix4x4* out, const Quaternion *quat)
+{
+	if (!out || !quat)
+		return NULL;
+
+	Matrix3x3 mat3;
+
+	QuaternionToMatrix3x3(&mat3, quat);
+
+	Matrix4x4 result(&mat3);
+	memcpy(out, &result, sizeof(Matrix4x4));
+	return out;
+}
+

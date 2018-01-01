@@ -60,6 +60,10 @@ Quaternion * QuaternionMultiply(Quaternion *out, const Quaternion *left, const Q
 //Rotating a vector with a quaternion
 Vector3 * QuaternionRotate(Vector3 *out, const Quaternion *quat, const Vector3 *v);
 
+//Conversion to rotation matrix
+Matrix3x3 * QuaternionToMatrix3x3(Matrix3x3 *out, const Quaternion *quat);
+Matrix4x4 * QuaternionToMatrix4x4(Matrix4x4 *out, const Quaternion *quat);
+
 }
 
 #endif //__QUATERNION_H__
