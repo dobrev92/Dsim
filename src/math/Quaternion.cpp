@@ -260,3 +260,25 @@ Matrix4x4 * Dsim::QuaternionToMatrix4x4(Matrix4x4* out, const Quaternion *quat)
 	return out;
 }
 
+//FROM AXIS
+Quaternion * Dsim::QuaternionFromAxis(Quaternion *out, const Vector3 *axis, scalar angle)
+{
+	if (!out || !axis)
+		return NULL;
+
+	//axis is unit length
+        //
+        // The quaternion representing the rotation is
+        //   q = cos(A/2)+sin(A/2)*(x*i+y*j+z*k)
+
+	scalar halfAngle = angle / 2;
+	scalar fSin = sin(halfAngle);
+
+	out->SetW(cos(halfAngle));
+	out->SetX(fSin * axis->X());
+	out->SetY(fSin * axis->Y());
+	out->SetZ(fSin * axis->Z());
+
+	return out;
+}
+
