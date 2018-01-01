@@ -67,6 +67,9 @@ Matrix4x4 * QuaternionToMatrix4x4(Matrix4x4 *out, const Quaternion *quat);
 //Constructs a quaternion to rotate around an axis by and angle. Angle is in radians.
 Quaternion * QuaternionFromAxis(Quaternion *out, const Vector3 *axis, scalar angle);
 
+//World Transform from orientation quaternion
+Matrix4x4 * Matrix4x4WorldTransform(Matrix4x4 *out, const Vector3 *pos, const Quaternion *orientation, const Vector3 *scale);
+
 }
 
 #endif //__QUATERNION_H__

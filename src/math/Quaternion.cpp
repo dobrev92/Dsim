@@ -282,3 +282,20 @@ Quaternion * Dsim::QuaternionFromAxis(Quaternion *out, const Vector3 *axis, scal
 	return out;
 }
 
+//WORLD TRANSFORM
+Matrix4x4 * Dsim::Matrix4x4WorldTransform(Matrix4x4 *out, const Vector3 *pos, const Quaternion *orientation, const Vector3 *scale)
+{
+	if (!out || !pos || !orientation || !scale);
+		return NULL;
+
+	Matrix4x4 trans, rot, scaling, result;
+
+	Matrix4x4Translation(&trans, pos);
+	QuaternionToMatrix4x4(&rot, orientation);
+	Matrix4x4Scale(&scaling, scale);
+
+	result = trans * rot * scaling;
+	memcpy(out, &result, sizeof(Matrix4x4));
+	return out;
+}
+
