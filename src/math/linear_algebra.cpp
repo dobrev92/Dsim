@@ -93,6 +93,24 @@ Vector2 Dsim::operator/(const Vector2 & left, const Vector2 & right)
 	return result;
 }
 
+Vector2 & Dsim::operator+=(Vector2 & left, const Vector2 & right)
+{
+	Vector2Add(&left, &left, &right);
+	return left;
+}
+
+Vector2 & Dsim::operator*=(Vector2 & left, const Vector2 & right)
+{
+	Vector2Multiply(&left, &left, &right);
+	return left;
+}
+
+Vector2 & Dsim::operator*=(Vector2 & left, const scalar & right)
+{
+	Vector2ScalarMultiply(&left, &left, right);
+	return left;
+}
+
 //Vector3
 Vector3::Vector3()
 {
@@ -166,6 +184,24 @@ Vector3 Dsim::operator/(const Vector3 & left, const Vector3 & right)
 
 	Vector3Divide(&result, &left, &right);
 	return result;
+}
+
+Vector3 & Dsim::operator+=(Vector3 & left, const Vector3 & right)
+{
+	Vector3Add(&left, &left, &right);
+	return left;
+}
+
+Vector3 & Dsim::operator*=(Vector3 & left, const Vector3 & right)
+{
+	Vector3Multiply(&left, &left, &right);
+	return left;
+}
+
+Vector3 & Dsim::operator*=(Vector3 & left, const scalar & right)
+{
+	Vector3ScalarMultiply(&left, &left, right);
+	return left;
 }
 
 //Vector4
@@ -251,6 +287,24 @@ Vector4 Dsim::operator/(const Vector4 & left, const Vector4 & right)
 
 	Vector4Divide(&result, &left, &right);
 	return result;
+}
+
+Vector4 & Dsim::operator+=(Vector4 & left, const Vector4 & right)
+{
+	Vector4Add(&left, &left, &right);
+	return left;
+}
+
+Vector4 & Dsim::operator*=(Vector4 & left, const Vector4 & right)
+{
+	Vector4Multiply(&left, &left, &right);
+	return left;
+}
+
+Vector4 & Dsim::operator*=(Vector4 & left, const scalar & right)
+{
+	Vector4ScalarMultiply(&left, &left, right);
+	return left;
 }
 
 //Matrix2x2
@@ -357,6 +411,18 @@ Vector3 Dsim::operator*(const Matrix3x3 & mat, const Vector3 & vec)
 Matrix4x4::Matrix4x4(scalar s)
 {
 	Matrix4x4Identity((Matrix4x4 *)&elements[0][0]);
+}
+
+Matrix4x4::Matrix4x4(const Matrix3x3 *mat)
+{
+	Matrix4x4Identity((Matrix4x4 *)&elements[0][0]);
+
+	unsigned int i, j;
+	for (i = 0; i < 3; i++) {
+		for (j = 0; j < 3; j++) {
+			elements[j][i] = mat->GetElement(i ,j);
+		}
+	}
 }
 
 //TODO: Implement columnt Matrix4x4 constructor

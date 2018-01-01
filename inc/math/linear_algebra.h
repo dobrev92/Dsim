@@ -43,6 +43,9 @@ Vector2 operator*(const Vector2 & left, const Vector2 & right);
 Vector2 operator*(const Vector2 & left, const scalar & right);
 Vector2 operator*(const scalar & left, const Vector2 & right);
 Vector2 operator/(const Vector2 & left, const Vector2 & right);
+Vector2 & operator+=(Vector2 & left, const Vector2 & right);
+Vector2 & operator*=(Vector2 & left, const Vector2 & right);
+Vector2 & operator*=(Vector2 & left, const scalar & right);
 
 
 class Vector3
@@ -77,6 +80,9 @@ Vector3 operator*(const Vector3 & left, const Vector3 & right);
 Vector3 operator*(const Vector3 & left, const scalar & right);
 Vector3 operator*(const scalar & left, const Vector3 & right);
 Vector3 operator/(const Vector3 & left, const Vector3 & right);
+Vector3 & operator+=(Vector3 & left, const Vector3 & right);
+Vector3 & operator*=(Vector3 & left, const Vector3 & right);
+Vector3 & operator*=(Vector3 & left, const scalar & right);
 
 
 class Vector4
@@ -114,6 +120,10 @@ Vector4 operator*(const Vector4 & left, const Vector4 & right);
 Vector4 operator*(const Vector4 & left, const scalar & right);
 Vector4 operator*(const scalar & left, const Vector4 & right);
 Vector4 operator/(const Vector4 & left, const Vector4 & right);
+Vector4 & operator+=(Vector4 & left, const Vector4 & right);
+Vector4 & operator*=(Vector4 & left, const Vector4 & right);
+Vector4 & operator*=(Vector4 & left, const scalar & right);
+
 
 class Matrix2x2
 {
@@ -183,6 +193,7 @@ class Matrix4x4
 		//Default constructor sets all elements to zero
 		Matrix4x4() {}
 		Matrix4x4(scalar s);
+		Matrix4x4(const Matrix3x3 *mat);
 		Matrix4x4(Vector4 *col0, Vector4 *col1, Vector4 *col2, Vector4 *col3);
         
 		//Get matrix element
