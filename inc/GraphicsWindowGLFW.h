@@ -23,6 +23,9 @@ class GraphicsWindowGLFW : public GraphicsWindow {
 		static void GLFWCursorPositionCallback(GLFWwindow* window, double xpos, double ypos);
 		static void GLFWMouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 		static void GLFWWindowSizeCallback(GLFWwindow* window, int width, int height);
+
+		//Will be used to give relative mouse movement;
+		static double xRef, yRef;
 	public:
 		GraphicsWindowGLFW();
 		ds_err Init(bool fullscreen, unsigned int samples, int width, int height);
@@ -32,6 +35,9 @@ class GraphicsWindowGLFW : public GraphicsWindow {
 		void SetMouseButtonCallback(MouseButtonCallback a_cb);
 		void SetWindowSizeCallback(WindowSizeCallback a_cb);
 		void SetCalleeObj(void *aCalee) { mCalee = aCalee; }
+
+		void GetRelativeMouseMovement(double *relX, double *relY);
+		DS_KEY_STATE GetKey(DS_KEY key);
 
 		bool IsActive();
 

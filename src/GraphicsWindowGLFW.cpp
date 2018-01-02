@@ -34,6 +34,7 @@ ds_err GraphicsWindowGLFW::Init(bool fullscreen, unsigned int samples, int width
 	}	
 
 	glfwSetTime(0);
+	glfwGetCursorPos(m_Window, &xRef, &yRef);
 
 	return DS_SUCCESS;
 }
@@ -56,6 +57,7 @@ ds_err GraphicsWindowGLFW::CreateWindow(int fullscreen, int samples, int width, 
 	}
 
 	glfwSetInputMode(m_Window, GLFW_STICKY_KEYS, GL_TRUE);
+	glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glfwSetCursorPosCallback(m_Window, GraphicsWindowGLFW::GLFWCursorPositionCallback);
 	glfwSetMouseButtonCallback(m_Window, GraphicsWindowGLFW::GLFWMouseButtonCallback);
@@ -84,6 +86,29 @@ void GraphicsWindowGLFW::SetWindowSizeCallback(WindowSizeCallback a_cb)
 {
 	dbg_info("\n");
 	m_WindowSizeCallback = a_cb;
+}
+
+void GraphicsWindowGLFW::GetRelativeMouseMovement(double *relX, double *relY)
+{
+	double posX, posY;
+
+	glfwGetCursorPos(m_Window, &posX, &posY);
+	if (relX)
+		*relX = xRef - posX;
+
+	if (relY)
+		*relY = yRef - posY;
+
+	xRef = posX;
+	yRef = posY;
+}
+
+DS_KEY_STATE GraphicsWindowGLFW::GetKey(DS_KEY key)
+{
+	int state;
+
+	state = glfwGetKey(m_Window, key);
+	return (DS_KEY_STATE)state;
 }
 
 bool GraphicsWindowGLFW::IsActive()
@@ -130,4 +155,6 @@ void (*GraphicsWindowGLFW::m_MousePosCallback)(void *, double, double) = NULL;
 void (*GraphicsWindowGLFW::m_MouseButtonCallback)(void *, int, int, int) = NULL;
 void (*GraphicsWindowGLFW::m_WindowSizeCallback)(void *, int, int) = NULL;
 void * GraphicsWindowGLFW::mCalee = NULL;
+double GraphicsWindowGLFW::xRef = 0;
+double GraphicsWindowGLFW::yRef = 0;
 
