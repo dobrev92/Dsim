@@ -8,6 +8,10 @@ Node::Node()
 	dbg_info("\n");
 	mParent = NULL;
 	mCachedTransformOutOfDate = true;
+
+	mOrientation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
+	mPosition = Vector3(0.0f, 0.0f, 0.0f);
+	mScale = Vector3(1.0f, 1.0f, 1.0f);
 }
 
 void Node::AddChild(Node *child)
@@ -24,7 +28,7 @@ Vector3 Node::GetPosition()
 	return mDerivedPosition;
 }
 
-Vector3 Node::GetOrientation()
+Quaternion Node::GetOrientation()
 {
 	return mDerivedOrientation;
 }
@@ -37,10 +41,9 @@ Vector3 Node::GetScale()
 Vector3 Node::WorldToLocalDirection(Vector3 worldDir, bool useScale)
 {
 	Vector3 result;
-	Matrix3x3 inv;
+	Quaternion inv;
 
-	Matrix3x3YawPitchRoll(&inv, &mDerivedOrientation);
-	Matrix3x3Inverse(&inv, &inv);
+	QuaternionInverse(&inv, &mDerivedOrientation);
 	if (useScale) {
 		result = inv * (worldDir / mDerivedScale);
 	} else {
@@ -50,26 +53,27 @@ Vector3 Node::WorldToLocalDirection(Vector3 worldDir, bool useScale)
 	return result;
 }
 
+void Node::Translate(scalar x, scalar y, scalar z, TransformSpace relativeTo)
+{
+	Vector3 distance(x, y, z);
+	Translate(distance, relativeTo);
+}
+
 void Node::Translate(Vector3 distance, TransformSpace relativeTo)
 {
-	//Used to transform some coordinates
-	//TODO: This should be optimized
-	Matrix3x3 trans;
-
 	switch (relativeTo) {
 		case TS_LOCAL:
-			Matrix3x3YawPitchRoll(&trans, &mOrientation);
-			mPosition = trans * distance;
+			mPosition += mOrientation * distance;
 			break;
 		case TS_WORLD:
 			if (mParent) {
 				mPosition = mPosition + mParent->WorldToLocalDirection(distance, true);
 			} else {
-				mPosition = mPosition + distance;
+				mPosition += distance;
 			}
 			break;
 		case TS_PARENT:
-			mPosition = mPosition + distance;
+			mPosition += distance;
 			break;
 		}
 
@@ -77,16 +81,43 @@ void Node::Translate(Vector3 distance, TransformSpace relativeTo)
 		Update();
 }
 
+void Node::Rotate(Quaternion q, TransformSpace relativeTo)
+{
+	Quaternion inv;
+
+	switch (relativeTo) {
+		case TS_LOCAL:
+			mOrientation = mOrientation * q;
+			break;
+		case TS_WORLD:
+			QuaternionInverse(&inv, &mDerivedOrientation);
+			mOrientation = mOrientation * inv * q * mDerivedOrientation;
+			break;
+		case TS_PARENT:
+			mOrientation = q * mOrientation;
+			break;
+		}
+
+		//Update
+		Update();
+}
+
+void Node::Rotate(Vector3 axis, scalar angle, TransformSpace relativeTo)
+{
+	Quaternion rot;
+	QuaternionFromAxis(&rot, &axis, angle);
+
+	Rotate(rot, relativeTo);
+}
+
 void Node::Update()
 {
 	//dbg_info("\n");
 	if (mParent) {
 		//used to rotate position based on parent's orientation
-		Matrix3x3 rot;
-
 		mParentOrientation = mParent->GetOrientation();
 		if (mInheritOrientation) {
-			mDerivedOrientation = mOrientation + mParentOrientation;
+			mDerivedOrientation = mParentOrientation * mOrientation;
 		} else {
 			mDerivedOrientation = mOrientation;
 		}
@@ -99,9 +130,8 @@ void Node::Update()
 		}
 
 		mParentPosition = mParent->GetPosition();
-		Matrix3x3YawPitchRoll(&rot, &mParentOrientation);
-		mDerivedPosition = rot * (mParentScale * mPosition);
-		mDerivedPosition = mDerivedPosition + mParentPosition;
+		mDerivedPosition = mParentOrientation * (mParentScale * mPosition);
+		mDerivedPosition += mParentPosition;
 	} else {
 		mDerivedOrientation = mOrientation;
 		mDerivedScale = mScale;

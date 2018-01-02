@@ -2,7 +2,9 @@
 #define __NODE_H__
 
 #include <vector>
+
 #include "math/linear_algebra.h"
+#include "math/Quaternion.h"
 
 namespace Dsim {
 
@@ -16,7 +18,6 @@ typedef enum {
 } TransformSpace;
 
 //TODO: This needs to be redefined and optimized.
-//TODO: Repace Euler angles with quaternions or 3x3 matrices
 class Node
 {
 	protected:
@@ -28,17 +29,17 @@ class Node
 
 		//position
 		Vector3 mPosition;
-		//Orientation using Euler angles
-		Vector3 mOrientation;
+		//orientation
+		Quaternion mOrientation;
 		//scale
 		Vector3 mScale;
 
 		Vector3 mParentPosition;
-		Vector3 mParentOrientation;
+		Quaternion mParentOrientation;
 		Vector3 mParentScale;
 
 		Vector3 mDerivedPosition;
-		Vector3 mDerivedOrientation;
+		Quaternion mDerivedOrientation;
 		Vector3 mDerivedScale;
 
 		bool mInheritOrientation;
@@ -53,7 +54,7 @@ class Node
 		void AddChild(Node *child);
 
 		Vector3 GetPosition();
-		Vector3 GetOrientation();
+		Quaternion GetOrientation();
 		Vector3 GetScale();
 
 		Vector3 WorldToLocalDirection(Vector3 worldDir, bool useScale);
@@ -63,10 +64,13 @@ class Node
 		void Translate(Vector3 distance, TransformSpace relativeTo = TS_PARENT);
 		void Translate(Vector3 dir, scalar distance, TransformSpace relativeTo = TS_PARENT);
 
-		void Rotate(Vector3 angles);
-		void RotateX(scalar pitch);
-		void RotateY(scalar yaw);
-		void RotateZ(scalar roll);
+		//TODO: optimize there for quaternions or 3x3 orientation matrices
+		void Rotate(Quaternion q, TransformSpace relativeTo = TS_LOCAL);
+		void Rotate(Vector3 axis, scalar angle, TransformSpace relativeTo = TS_LOCAL);
+
+		virtual void Yaw(scalar angle, TransformSpace relativeTo = TS_LOCAL) {}
+		virtual void Pitch(scalar angle, TransformSpace relativeTo = TS_LOCAL) {}
+		virtual void Roll(scalar angle, TransformSpace relativeTo = TS_LOCAL) {}
 
 		virtual void Update();
 
