@@ -12,7 +12,7 @@ class Quaternion
 	public:
 		Quaternion() {}
 		Quaternion(scalar aW, scalar aX, scalar aY, scalar aZ);
-		Quaternion(scalar amount, const Vector3 *axis);
+		Quaternion(const Vector3 *axis, scalar angle);
 
 		scalar W() const { return w; }
 		scalar X() const { return x; }
@@ -50,6 +50,9 @@ scalar QuaternionLength(const Quaternion *quat);
 
 //Unit Quaternion
 Quaternion * QuaternionUnit(Quaternion *out, const Quaternion *quat);
+
+//Identity Quaternion
+Quaternion * QuaternionIdentity(Quaternion *out);
 
 //Quaternion Inverse
 Quaternion * QuaternionInverse(Quaternion *out, const Quaternion *quat);

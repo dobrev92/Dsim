@@ -14,12 +14,10 @@ Quaternion::Quaternion(scalar aW, scalar aX, scalar aY, scalar aZ)
 	z = aZ;
 }
 
-Quaternion::Quaternion(scalar amount, const Vector3 *axis)
+Quaternion::Quaternion(const Vector3 *axis, scalar angle)
 {
-	w = amount;
-	x = axis->X();
-	y = axis->Y();
-	z = axis->Z();
+
+	QuaternionFromAxis((Quaternion *)&w, axis, angle);
 }
 
 scalar Quaternion::Length() const
@@ -138,6 +136,7 @@ scalar Dsim::QuaternionLength(const Quaternion *quat)
 	return length;
 }
 
+//UNIT QUATERNION
 Quaternion * Dsim::QuaternionUnit(Quaternion *out, const Quaternion *quat)
 {
 	if (!out || !quat)
@@ -148,6 +147,20 @@ Quaternion * Dsim::QuaternionUnit(Quaternion *out, const Quaternion *quat)
 
 	result = *quat * (1 / length);
 	memcpy(out, &result, sizeof(Quaternion));
+	return out;
+}
+
+//IDENTITY
+Quaternion * QuaternionIdentity(Quaternion *out)
+{
+	if (!out)
+		return NULL;
+
+	out->SetW(1.0f);
+	out->SetX(0.0f);
+	out->SetY(0.0f);
+	out->SetZ(0.0f);
+
 	return out;
 }
 
@@ -285,7 +298,7 @@ Quaternion * Dsim::QuaternionFromAxis(Quaternion *out, const Vector3 *axis, scal
 //WORLD TRANSFORM
 Matrix4x4 * Dsim::Matrix4x4WorldTransform(Matrix4x4 *out, const Vector3 *pos, const Quaternion *orientation, const Vector3 *scale)
 {
-	if (!out || !pos || !orientation || !scale);
+	if (!out || !pos || !orientation || !scale)
 		return NULL;
 
 	Matrix4x4 trans, rot, scaling, result;
