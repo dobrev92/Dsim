@@ -13,8 +13,20 @@ typedef enum {
 } DS_KEY;
 
 typedef enum {
-	DS_KEY_PRESS	= 1,
+	DS_MOUSE_BUTTON_1 	= 0,
+	DS_MOUSE_BUTTON_2 	= 1,
+	DS_MOUSE_BUTTON_3 	= 2,
+	DS_MOUSE_BUTTON_4 	= 3,
+	DS_MOUSE_BUTTON_5 	= 4,
+	DS_MOUSE_BUTTON_6 	= 5,
+	DS_MOUSE_BUTTON_LEFT	= DS_MOUSE_BUTTON_1,
+	DS_MOUSE_BUTTON_RIGHT	= DS_MOUSE_BUTTON_2,
+	DS_MOUSE_BUTTON_MIDDLE	= DS_MOUSE_BUTTON_3,
+} DS_MOUSE_BUTTON;
+
+typedef enum {
 	DS_KEY_RELEASE	= 0,
+	DS_KEY_PRESS	= 1,
 	DS_KEY_REPEAT	= 2
 } DS_KEY_STATE;
 
@@ -34,6 +46,7 @@ class GraphicsWindow {
 		virtual void SetWindowSizeCallback(WindowSizeCallback a_cb)=0;
 		virtual void SetCalleeObj(void *aCallee)=0;
 
+		virtual void DisableCursor(bool disable)=0;
 		virtual void GetRelativeMouseMovement(double *relX, double *relY)=0;
 		virtual DS_KEY_STATE GetKey(DS_KEY key)=0;
 

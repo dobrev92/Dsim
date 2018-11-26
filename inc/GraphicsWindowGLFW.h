@@ -36,6 +36,7 @@ class GraphicsWindowGLFW : public GraphicsWindow {
 		void SetWindowSizeCallback(WindowSizeCallback a_cb);
 		void SetCalleeObj(void *aCalee) { mCalee = aCalee; }
 
+		void DisableCursor(bool enable);
 		void GetRelativeMouseMovement(double *relX, double *relY);
 		DS_KEY_STATE GetKey(DS_KEY key);
 

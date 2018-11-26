@@ -57,7 +57,7 @@ ds_err GraphicsWindowGLFW::CreateWindow(int fullscreen, int samples, int width, 
 	}
 
 	glfwSetInputMode(m_Window, GLFW_STICKY_KEYS, GL_TRUE);
-	glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 	glfwSetCursorPosCallback(m_Window, GraphicsWindowGLFW::GLFWCursorPositionCallback);
 	glfwSetMouseButtonCallback(m_Window, GraphicsWindowGLFW::GLFWMouseButtonCallback);
@@ -86,6 +86,14 @@ void GraphicsWindowGLFW::SetWindowSizeCallback(WindowSizeCallback a_cb)
 {
 	dbg_info("\n");
 	m_WindowSizeCallback = a_cb;
+}
+
+void GraphicsWindowGLFW::DisableCursor(bool disable)
+{
+	if(disable)
+		glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	else
+		glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 void GraphicsWindowGLFW::GetRelativeMouseMovement(double *relX, double *relY)
