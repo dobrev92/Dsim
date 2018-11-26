@@ -16,6 +16,7 @@ class TestCommon {
 		Dsim::ds_err InitRender();
 		Dsim::Node *Root;
 		Dsim::Node *Camera;
+		bool mRotateEnable;
 
 		void mMouseMoveCallback(double xpos, double ypos);
 		void mMouseButtonCallback(int button, int action, int mods);

@@ -10,6 +10,7 @@ TestCommon::TestCommon()
 	dbg_info("\n");
 	window = NULL;
 	render = NULL;
+	mRotateEnable = false;
 
 	InitWindow();
 	InitRender();
@@ -25,7 +26,7 @@ ds_err TestCommon::InitWindow()
 {
 	dbg_info("\n");
 	window = new GraphicsWindowGLFW;
-	window->Init(true, 4, 1600, 900);
+	window->Init(false, 4, 848, 480);
 
 	//Init the callbacks
 	window->SetMouseMoveCallback(TestCommon::mSMouseMoveCallback);
@@ -64,12 +65,12 @@ void TestCommon::UpdateCamera()
 	double xMov, yMov;
 
 	window->GetRelativeMouseMovement(&xMov, &yMov);
-	if (xMov) {
+	if (xMov && mRotateEnable) {
 		Vector3 axis(0.0f, 1.0f, 0.0f);
-		Camera->Rotate(axis, 0.001f * xMov);
+		Camera->Rotate(axis, 0.001f * xMov, TS_PARENT);
 	}
 
-	if (yMov) {
+	if (yMov && mRotateEnable) {
 		Vector3 axis(1.0f, 0.0f, 0.0f);
 		Camera->Rotate(axis, 0.001f * yMov);
 	}
@@ -105,12 +106,23 @@ ds_err TestCommon::Run()
 //MEMBER CALLBACKS
 void TestCommon::mMouseMoveCallback(double xpos, double ypos)
 {
-	//dbg_info("\n"
+	//dbg_info("\n");
 }
 
 void TestCommon::mMouseButtonCallback(int button, int action, int mods)
 {
 	//dbg_info("\n");
+	if (action == DS_KEY_PRESS) {
+		//dbg_info("Mouse button pressed\n");
+		mRotateEnable = true;
+		window->DisableCursor(true);
+	}
+
+	if (action == DS_KEY_RELEASE) {
+		//dbg_info("Mouse button released\n");
+		mRotateEnable = false;
+		window->DisableCursor(false);
+	}
 }
 
 void TestCommon::mWindowResizeCallback(int width, int height)
